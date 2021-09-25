@@ -23,7 +23,7 @@ app.get("/", (req, res, next) =>
     db.collection('users').find().toArray((err, results) => {
         if (err) return console.log(err)
         res.json(results)
-        console.log(results);
+        console.log("Acesso ao index");
     })
 });
 
@@ -41,10 +41,9 @@ app.post('/update/:id', (req,res) =>
         }
     }, (err, result) => {
         if (err) return res.send(err)
-        res.status(200).json("Usuário alterado")
+        res.status(200).json("Usuário alterado com sucesso.")
+        console.log("Documentto ID:%s alterado com sucesso.", id);
     })
-    
-    
 });
 
 app.post('/create', (req, res) =>
@@ -52,8 +51,8 @@ app.post('/create', (req, res) =>
     const user = req.body
     db.collection('users').insertOne(user, (err, result) => {
         if (err) return res.send(err)
-
-        res.status(200).json('Usuário criado com sucesso!')
+        res.status(200).json('Usuário criado com sucesso.')
+        console.log("Usuário criado com sucesso.");
     })
 });
 
@@ -65,6 +64,6 @@ app.delete('/delete/:id', (req, res) =>
     db.collection('users').deleteOne({_id: ObjectID(id)}, (err, result) => {
         if (err) return res.send(500, err)
         res.status(200).json('Deletado do Banco de dados!');
-        console.log('Deletado do Banco de dados!');
+        console.log('Documento ID:%s foi deletado do Banco de dados.', id);
     })
 });
