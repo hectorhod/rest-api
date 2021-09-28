@@ -27,12 +27,13 @@ app.get("/", (req, res, next) =>
     })
 });
 
-app.post('/update/:id', (req,res) => 
+app.put('/update/:id', (req,res) => 
 {
     var id = req.params.id
     var username = req.body.username
     var email = req.body.email
     const ObjectID = require('mongodb').ObjectId
+    console.log("Chegou no PUT");
 
     db.collection('users').updateOne({_id:ObjectID(id)}, {
         $set: {
@@ -42,7 +43,7 @@ app.post('/update/:id', (req,res) =>
     }, (err, result) => {
         if (err) return res.send(err)
         res.status(200).json("Usuário alterado com sucesso.")
-        console.log("Documentto ID:%s alterado com sucesso.", id);
+        console.log("Documento ID:%s alterado com sucesso.", id);
     })
 });
 
