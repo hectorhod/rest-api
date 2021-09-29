@@ -14,6 +14,13 @@ export abstract class CommonRoutes {
 
     abstract configureRoutes(): Router;
 
+    protected get(uri:string){
+        this.router.get(uri, (req: any, res: any, next: any) => {
+            console.log("Acesso ao aluno");
+            res.status(200).json("Acesso ao aluno");
+        })
+    }
+
     
     public getName() : string {
         return this.name

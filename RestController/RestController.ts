@@ -1,16 +1,19 @@
-import express from "express";
+import express, { Router } from "express";
+import { CommonRoutes } from "../Routes/CommonRoutes";
 import { AlunoRoutes } from "./RoutesControllers/AlunoRoutes";
 const PORT = 3000;
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const app = express();
-const aluno = new AlunoRoutes(app);
+export const routes:{route?:CommonRoutes} = {};
 
 export function ApiStart(){
-    app.use(bodyParser.json());
+    app.use(express.json());
     app.use(express.urlencoded({extended: false}));
     app.listen(PORT, () => {
         console.log("Servidor rodando na porta " + PORT);
     });
+
+    routes.route = new AlunoRoutes(app);
 }
 
 app.get("/", (req: any, res: any, next: any) => {
