@@ -1,9 +1,7 @@
 import express, { Router } from "express";
 import { CommonRoutes } from "../Routes/CommonRoutes";
 import { AlunoRestController } from "./AlunoRestController";
-import { AlunoRoutes } from "./RoutesControllers/AlunoRoutes";
 const PORT = 3000;
-// const bodyParser = require('body-parser');
 const app = express();
 export const routes:{route?:CommonRoutes} = {};
 

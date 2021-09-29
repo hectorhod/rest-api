@@ -1,5 +1,5 @@
 import { ObjectId } from "bson";
-import { collections, MangoController } from "../MangoDB/MangoController";
+import { collections, getCollection, MangoController } from "../MangoDB/MangoController";
 import { Aluno } from "../Models/Pessoas/Aluno";
 import { AlunoRoutes } from "./RoutesControllers/AlunoRoutes";
 import { Express } from "express";
@@ -13,8 +13,9 @@ export class AlunoRestController extends AlunoRoutes {
     public get(uri:string) {
         this.router.get(uri, async (_req, res) => {
             try{
-                if (collections.collection){
-                    const alunos = (await collections.collection.find({}).toArray() as Aluno[]);
+                const collection = getCollection("Alunos");
+                if (collection != {}){
+                    const alunos = (await collection?.collection?.find({}).toArray() as Aluno[]);
                     res.status(200).send(alunos)
                 }else {
                     throw new Error("Collections Users estava nulo!")
@@ -30,7 +31,7 @@ export class AlunoRestController extends AlunoRoutes {
         this.router.post(uri, async (req, res) =>{
             try{
                 const aluno = req.body as Aluno;
-                const result = await collections.collection?.insertOne(aluno);
+                const result = await getCollection("Alunos")?.collection?.insertOne(aluno);
 
                 result
                     ? res.status(200).send("Aluno criado com sucesso com o id " + result.insertedId)
@@ -49,7 +50,7 @@ export class AlunoRestController extends AlunoRoutes {
                     const id = req.params.id;
                     const aluno = req.body as Aluno;
                     const query = {_id: new ObjectId(id)};
-                    const result = await collections.collection?.updateOne(query, {$set:aluno});
+                    const result = await getCollection("Alunos")?.collection?.updateOne(query, {$set:aluno});
 
                     result
                         ? res.status(200).send("Aluno atualizado com sucesso com o id " + id)
@@ -71,7 +72,7 @@ export class AlunoRestController extends AlunoRoutes {
                 if (req.params.id){
                     const id = req.params.id;
                     const query = {_id: new ObjectId(id)};
-                    const result = await collections.collection?.deleteOne(query);
+                    const result = await getCollection("Alunos")?.collection?.deleteOne(query);
 
                     result
                         ? res.status(200).send("Aluno removido com sucesso com o id " + id)
