@@ -1,16 +1,11 @@
 import * as mongoDB from "mongodb"
-import { ObjectId } from "mongodb";
 import dotenv from "dotenv"
 
-// export const collections: {collection?: mongoDB.Collection} = {};
 export const collections: [{collection?: mongoDB.Collection, name?:string}] = [{}];
 dotenv.config({path: './banco.env'})
 export class MangoController {
-    // readonly uri:string = "mongodb+srv://dbUser:userDB1234@cluster0.qpj9v.mongodb.net";
     readonly uri:string = process.env.BD_CONN_URI as string;
-    readonly bodyParser = require('body-parser');
     private client:mongoDB.MongoClient = new mongoDB.MongoClient(this.uri);
-    // private db: mongoDB.Db = this.client.db("dadosdb");
     private db: mongoDB.Db = this.client.db((process.env.BD_CONN_NAME as string));
 
     /**
@@ -22,7 +17,6 @@ export class MangoController {
 
     public async ConnectCollection(collectionName:string){
         const collection: mongoDB.Collection = this.db.collection(collectionName);
-        // collections.collection = collection;
         collections.push({collection:collection,name:collectionName})
 
         console.log('Acesso ao banco de dados: %s e coleção: %s',this.db.databaseName, collection.collectionName);

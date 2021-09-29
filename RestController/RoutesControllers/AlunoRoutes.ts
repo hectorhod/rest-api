@@ -1,8 +1,5 @@
 import { Express, Router } from "express";
 import { CommonRoutes } from "../../Routes/CommonRoutes";
-import { collections } from "../../MangoDB/MangoController";
-import { Aluno } from "../../Models/Pessoas/Aluno";
-import { ObjectId } from "bson";
 
 export class AlunoRoutes extends CommonRoutes{
     configureRoutes(): Router {

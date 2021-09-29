@@ -14,14 +14,15 @@ export class AlunoRestController extends AlunoRoutes {
         this.router.get(uri, async (_req, res) => {
             try{
                 const collection = getCollection("Alunos");
-                if (collection != {}){
+                if (collection){
                     const alunos = (await collection?.collection?.find({}).toArray() as Aluno[]);
                     res.status(200).send(alunos)
                 }else {
                     throw new Error("Collections Users estava nulo!")
                 }
-            } catch(error) {
-                res.status(500).send(error)
+            } catch(error: any) {
+                console.log(error);
+                res.status(500).send(error.message);
             }
         });
     }
