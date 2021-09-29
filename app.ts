@@ -1,7 +1,9 @@
 import { MangoController } from "./MangoDB/MangoController";
 import { ApiStart } from "./RestController/RestController";
-var mango = new MangoController();
+const mongo:MangoController = new MangoController();
 
-mango.MangoConnect();
+mongo.ConnectCollection("Alunos");
+mongo.ConnectCollection("Users");
+
 ApiStart();
 

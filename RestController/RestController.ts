@@ -1,5 +1,6 @@
 import express, { Router } from "express";
 import { CommonRoutes } from "../Routes/CommonRoutes";
+import { AlunoRestController } from "./AlunoRestController";
 import { AlunoRoutes } from "./RoutesControllers/AlunoRoutes";
 const PORT = 3000;
 // const bodyParser = require('body-parser');
@@ -12,8 +13,8 @@ export function ApiStart(){
     app.listen(PORT, () => {
         console.log("Servidor rodando na porta " + PORT);
     });
-
-    routes.route = new AlunoRoutes(app);
+    
+    routes.route = new AlunoRestController(app);
 }
 
 app.get("/", (req: any, res: any, next: any) => {
