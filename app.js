@@ -3,11 +3,13 @@ var app = express();
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const { ObjectID } = require("bson");
+const dotenv = require('dotenv');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-const uri = "mongodb+srv://dbUser:userDB1234@cluster0.qpj9v.mongodb.net/dadosdb?retryWrites=true&w=majority";
+dotenv.config({path:'./banco.env'})
+const uri = process.env.BD_CONN_URI + '/' + process.env.BD_CONN_NAME
 
 MongoClient.connect(uri, (err, client) => {
     if (err) return console.log(err)
