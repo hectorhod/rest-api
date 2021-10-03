@@ -1,12 +1,17 @@
-import { collections, MangoController } from "./MangoDB/MangoController";
+// Realiza a importação dos modulos necessários
+import { MongoController } from "./MongoDB/MongoController";
 import { ApiStart } from "./RestController/RestController";
 
-const mongo:MangoController = new MangoController();
+// Cria um controlado para o MongoDB
+const mongo:MongoController = new MongoController();
 
+// Realiza a conexão com as COLLECTIONS do controlado mongo
 mongo.ConnectCollection("Alunos");
 mongo.ConnectCollection("users");
 
-console.log(collections)
+// Exibe os objetos de COLLECTIONS conectados
+// console.log(collections)
 
+// Inicializa a API (para inicializar utilize "npm run start" ou "npm run nodemon")
 ApiStart(); 
 
