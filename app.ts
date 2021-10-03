@@ -6,5 +6,7 @@ const mongo:MangoController = new MangoController();
 mongo.ConnectCollection("Alunos");
 mongo.ConnectCollection("users");
 
-ApiStart();
+console.log(collections)
+
+ApiStart(); 
 

@@ -47,7 +47,7 @@ export class AlunoRestController extends AlunoRoutes {
     public put(uri:string){
         this.router.put(uri+'/:id', async (req,res) => {
             try{
-                if (req.params.id){
+                if (req.params?.id){
                     const id = req.params.id;
                     const aluno = req.body as Aluno;
                     const query = {_id: new ObjectId(id)};
