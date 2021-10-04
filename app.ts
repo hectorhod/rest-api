@@ -7,6 +7,7 @@ const mongo:MongoController = new MongoController();
 
 // Realiza a conexão com as COLLECTIONS do controlado mongo
 mongo.ConnectCollection("Alunos");
+mongo.ConnectCollection("Professors");
 mongo.ConnectCollection("users");
 
 // Exibe os objetos de COLLECTIONS conectados

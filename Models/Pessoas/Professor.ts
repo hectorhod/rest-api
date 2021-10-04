@@ -4,7 +4,7 @@ import { Pessoa } from "./Pessoa";
 // Define o objeto modelo Professor
 export class Professor extends Pessoa {
     // Objetos Exclusivos do Professor
-    Turmas: [] = [];
+    Turmas: number[] = [];
     Materia: string;
 
     // É um construtor, define a classe pai Pessoa
