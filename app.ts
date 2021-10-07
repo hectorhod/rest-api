@@ -9,6 +9,7 @@ const mongo:MongoController = new MongoController();
 mongo.ConnectCollection("Alunos");
 mongo.ConnectCollection("Professors");
 mongo.ConnectCollection("Diretors");
+mongo.ConnectCollection("Livros");
 mongo.ConnectCollection("users");
 
 // Exibe os objetos de COLLECTIONS conectados

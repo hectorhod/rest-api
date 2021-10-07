@@ -3,7 +3,7 @@ import Materia from "../Materia/Materia";
 import { Aluno } from "../Pessoas/Aluno";
 
 export class Turma{
-    private _id:ObjectId;
+    _id:ObjectId;
     protected materias: Materia[] = [];
     protected alunos: Aluno[] = [];
     periodo: number;

@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import { CommonRoutes } from "../Routes/CommonRoutes";
 import { AlunoRestController } from "./AlunoRestController";
 import { DiretorRestController } from "./DiretorRestController";
+import { LibraryRestController } from "./LibraryRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
 
 // Define a porta de hospedagem
@@ -30,6 +31,8 @@ export function ApiStart(){
     routes.push({route : new AlunoRestController(app)});
     routes.push({route : new ProfessorRestController(app)})
     routes.push({route : new DiretorRestController(app)})
+    routes.push({route : new LibraryRestController(app)})
+
 
 }
 

@@ -2,7 +2,7 @@ import { ObjectId } from "bson";
 import { Livro } from "../Livro/Livro";
 
 export default class Materia{
-    private _id:ObjectId;
+    _id:ObjectId;
     nome:string;
     professor: ObjectId;
     private livros: Livro[] = [];
