@@ -2,6 +2,7 @@
 import express, { Router } from "express";
 import { CommonRoutes } from "../Routes/CommonRoutes";
 import { AlunoRestController } from "./AlunoRestController";
+import { DiretorRestController } from "./DiretorRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
 
 // Define a porta de hospedagem
@@ -28,6 +29,8 @@ export function ApiStart(){
     // Empurra uma ROUTE para a lista de routes
     routes.push({route : new AlunoRestController(app)});
     routes.push({route : new ProfessorRestController(app)})
+    routes.push({route : new DiretorRestController(app)})
+
 }
 
 export function getRoute(routeName:string){
