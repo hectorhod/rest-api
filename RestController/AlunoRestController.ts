@@ -4,7 +4,7 @@ import { getCollection } from "../MongoDB/MongoController";
 import { Aluno } from "../Models/Pessoas/Aluno";
 import { AlunoRoutes } from "./RoutesControllers/AlunoRoutes";
 import { Express } from "express";
-import { Console } from "console";
+import { Console } from "console"; //Marcelo, vai usar esse modulo???
 
 // Define a classe AlunoRestController, a qual controla os requests recebidos no /aluno
 export class AlunoRestController extends AlunoRoutes {

@@ -49,7 +49,7 @@ export function getRoute(routeName:string){
     }
 }
 
-// Define um endereço de escuta para responder (nete caso localhost:port/)
+// Define um endereço de escuta para responder (neste caso localhost:port/)
 app.get("/", (req: any, res: any, next: any) => {
     console.log("Acesso ao base");
     res.status(200).json("Acesso ao base")
