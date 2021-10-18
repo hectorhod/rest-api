@@ -10,7 +10,7 @@ mongo.ConnectCollection("Alunos");
 mongo.ConnectCollection("Professors");
 mongo.ConnectCollection("Diretors");
 mongo.ConnectCollection("Livros");
-mongo.ConnectCollection("users");
+mongo.ConnectCollection("Users");
 
 // Exibe os objetos de COLLECTIONS conectados
 // console.log(collections)

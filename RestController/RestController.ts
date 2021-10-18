@@ -5,6 +5,7 @@ import { AlunoRestController } from "./AlunoRestController";
 import { DiretorRestController } from "./DiretorRestController";
 import { LibraryRestController } from "./LibraryRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
+import { UserRestController } from "./UserRestController";
 
 // Define a porta de hospedagem
 const PORT = 3000;
@@ -19,6 +20,7 @@ export const routes:[{route?:CommonRoutes}] = [{}];
 export function ApiStart(){
     // Define que a api vai receber JSON/Application
     app.use(express.json());
+    app.use(express.urlencoded({extended: false}))
 
     // app.use(express.urlencoded({extended: false}));
 
@@ -32,6 +34,8 @@ export function ApiStart(){
     routes.push({route : new ProfessorRestController(app)})
     routes.push({route : new DiretorRestController(app)})
     routes.push({route : new LibraryRestController(app)})
+    routes.push({route : new UserRestController(app)})
+
 
 
 }
