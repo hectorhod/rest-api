@@ -19,7 +19,9 @@
     "ts-node": "^10.2.1"
   },
   "scripts": {
+    "prestart": "npm install",
     "start": "npx ts-node app.ts",
+    "prenodemon": "npm install",
     "nodemon": "npx nodemon app.ts -e ts"
   }
 }
