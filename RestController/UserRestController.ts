@@ -12,8 +12,8 @@ export class UserRestController extends UserRoutes {
     constructor(app: Express){
         super(app,"userRest");
     }
-    
-    // Define um método para o request GET no /user
+
+// Define um método para o request GET no /professor
     public get(uri:string) {
         // Configura o router para uma uri
         this.router.get(uri, async (_req, res) => {
@@ -21,12 +21,12 @@ export class UserRestController extends UserRoutes {
                 // Obtem a COLLECTION necessária da lista de collection
                 const collection = getCollection("Users");
                 if (collection){
-                    // Obtém todos os alunos do MongoDB
-                    const alunos = (await collection?.collection?.find({}).toArray() as User[]);
+                    // Obtém todos os users do MongoDB
+                    const users = (await collection?.collection?.find({}).toArray() as User[]);
 
-                    // Devolve uma mensagem para o remetente com os alunos e um código de status
-                    res.status(200).send(alunos)
-                    console.log("Users retornado com sucesso")
+                    // Devolve uma mensagem para o remetente com os users e um código de status
+                    res.status(200).send(users)
+                    console.log("Professors retornado com sucesso")
                 }else {
                     // Joga um novo erro caso não exista uma collection
                     throw new Error("Collections Users estava nulo!")
@@ -36,13 +36,13 @@ export class UserRestController extends UserRoutes {
                 console.log(error);
 
                 // Devolve uma mensagem para o remetente com o erro e um código de status
-                res.status(400).send(error.message);
+                res.status(500).send(error.message);
             }
         });
     }
 
     // Define um método para o request GET no /user
-    public getById(uri:string) {
+    protected getById(uri:string) {
         // Configura o router para uma uri
         this.router.get(uri+'/:id', async (req, res) => {
             try{
@@ -51,20 +51,21 @@ export class UserRestController extends UserRoutes {
                     const id = req.params.id;
 
                     // Cria uma query de pesquisa com o id recebido
-                    const query = {_id: new ObjectId(id)};
-
-                    // Obtem a COLLECTION necessária da lista de collection e tenta atualizar o objeto
-                    const result = await getCollection("Users")?.collection?.findOne(query);
+                    const result: User = await this.getUserById(id);
 
                     // Exibe o resultado da operação anterior
-                    result
-                        ? (res.status(200).send(`User encontrado com sucesso com o id: ${id}\n${result} `),
-                            console.log(`User encontrado com sucesso com o id: ${{id}}\n${result} `))
-                        : (res.status(500).send("User não foi encontrado."),
-                            console.log("User não foi encontrado."))
+                    if(result){
+                        res.status(200).send(`User encontrado com sucesso com o id: ${id}\n${result} `)
+                        console.log(`User encontrado com sucesso com o id: ${{id}}\n${result} `)
+                    }else{
+                        res.status(500).send("User não foi encontrado.")
+                        console.log("User não foi encontrado.")
+                    }
+                    
                 }else {
                     throw new Error("A requisição não pode ser concluida pela falta do ID")
                 }
+
             } catch(error: any) {
                 // Imprime um erro no console
                 console.log(error);
@@ -72,10 +73,11 @@ export class UserRestController extends UserRoutes {
                 // Devolve uma mensagem para o remetente com o erro e um código de status
                 res.status(400).send(error.message);
             }
+
         });
     }
 
-    public getByUsername(uri:string) {
+    protected getByUsername(uri:string) {
         // Configura o router para uma uri
         this.router.get(uri+"/:username", async (req, res) => {
             try{
@@ -109,7 +111,7 @@ export class UserRestController extends UserRoutes {
     }
 
     // Define um método para o request POST no /user
-    public post(uri:string){
+    protected post(uri:string){
         // Configura o router para uma uri
         this.router.post(uri, async (req, res) =>{
             try{
@@ -140,7 +142,7 @@ export class UserRestController extends UserRoutes {
     }
 
     // Define um método para o request PUT no /user
-    public put(uri:string){
+    protected put(uri:string){
         // Configura o router para uma uri
         this.router.put(uri+'/:id', async (req,res) => {
             try{
@@ -178,7 +180,7 @@ export class UserRestController extends UserRoutes {
     }
 
     // Define um método para o request DELETE no /user
-    public delete(uri:string){
+    protected delete(uri:string){
         // Configura o router para uma uri
         this.router.delete(uri+'/:id', async (req,res) => {
             try{
@@ -210,6 +212,12 @@ export class UserRestController extends UserRoutes {
                 res.status(400).send(error.message);
             }
         })
+    }
+
+    public async getUserById(id: string): Promise<User>{
+        const query = { _id:new ObjectId(id) };
+        const result = await getCollection("Users")?.collection?.findOne(query) as User;
+        return result;
     }
 
 }

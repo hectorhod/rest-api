@@ -17,15 +17,15 @@ export class User{
         this.pessoa = pessoa;
     }
 
-    public async CompareIt(password:string){
-        const validPassword = await bcrypt.compare(password,this.password);
-        if(validPassword){
-            return true;
-        }else{
-            return false;
-        }
-    }
+}
 
+export async function CompareIt(password:string, user:User){
+    const validPassword = await bcrypt.compare(password,user.password);
+    if(validPassword){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 export async function HashIt(password:string){

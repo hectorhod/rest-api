@@ -4,6 +4,7 @@ import { CommonRoutes } from "../Routes/CommonRoutes";
 import { AlunoRestController } from "./AlunoRestController";
 import { DiretorRestController } from "./DiretorRestController";
 import { LibraryRestController } from "./LibraryRestController";
+import { LoginRestController } from "./LoginRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
 import { UserRestController } from "./UserRestController";
 
@@ -14,7 +15,7 @@ const PORT = 3000;
 const app = express();
 
 // Armazena as ROUTE em uma lista de routes
-export const routes:[{route?:CommonRoutes}] = [{}];
+export const routes:Array<CommonRoutes> = new Array<CommonRoutes>();
 
 // Serve para inicializar a API
 export function ApiStart(){
@@ -30,11 +31,13 @@ export function ApiStart(){
     });
     
     // Empurra uma ROUTE para a lista de routes
-    routes.push({route : new AlunoRestController(app)});
-    routes.push({route : new ProfessorRestController(app)})
-    routes.push({route : new DiretorRestController(app)})
-    routes.push({route : new LibraryRestController(app)})
-    routes.push({route : new UserRestController(app)})
+    routes.push(new AlunoRestController(app));
+    routes.push(new ProfessorRestController(app));
+    routes.push(new DiretorRestController(app));
+    routes.push(new LibraryRestController(app));
+    routes.push(new UserRestController(app));
+    routes.push(new LoginRestController(app));
+
 
 
 
@@ -44,7 +47,7 @@ export function getRoute(routeName:string){
     // Procura na lista de routes a ROUTE com nome especificado
     try{
         var route = routes.find((route) => {
-            return route.route?.getName() === routeName
+            return route.getName() === routeName
         });
         
         if(route){

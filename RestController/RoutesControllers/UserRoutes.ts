@@ -1,4 +1,5 @@
 import { Router,Express } from "express";
+import { User } from "../../Models/Pessoas/User";
 import { CommonRoutes } from "../../Routes/CommonRoutes";
 
 export abstract class UserRoutes extends CommonRoutes{
@@ -28,7 +29,7 @@ export abstract class UserRoutes extends CommonRoutes{
         super(app,Router(),name);
     }
 
-    public abstract getById(uri:string): void;
-    public abstract getByUsername(uri:string): void;
+    protected abstract getById(uri:string): void;
+    protected abstract getByUsername(uri:string): void;
     
 }
