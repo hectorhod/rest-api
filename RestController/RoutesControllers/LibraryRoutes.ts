@@ -8,6 +8,7 @@ export class LibraryRoutes extends CommonRoutes{
     configureRoutes(): Router {
         // Comando herdado configura o metodo GET
         this.get("/");
+        this.getById("/getById");
 
         // Comando herdado configura o metodo POST
         this.post("/");
@@ -28,6 +29,8 @@ export class LibraryRoutes extends CommonRoutes{
         super(app,Router(),routeName);
     }
 
+    protected getById(uri:string){throw new Error("O método não foi implementado!!!");
+    };
 
 }
 
