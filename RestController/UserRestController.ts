@@ -19,18 +19,8 @@ export class UserRestController extends UserRoutes {
         this.router.get(uri, async (_req, res) => {
             try{
                 // Obtem a COLLECTION necessária da lista de collection
-                const collection = getCollection("Users");
-                if (collection){
-                    // Obtém todos os users do MongoDB
-                    const users = (await collection?.collection?.find({}).toArray() as User[]);
-
-                    // Devolve uma mensagem para o remetente com os users e um código de status
-                    res.status(200).send(users)
-                    console.log("Professors retornado com sucesso")
-                }else {
-                    // Joga um novo erro caso não exista uma collection
-                    throw new Error("Collections Users estava nulo!")
-                }
+                var users = await this.getAllUsers();
+                res.status(200).send(users);
             } catch(error: any) {
                 // Imprime um erro no console
                 console.log(error);
@@ -39,6 +29,19 @@ export class UserRestController extends UserRoutes {
                 res.status(500).send(error.message);
             }
         });
+    }
+
+    private async getAllUsers() {
+        const collection = getCollection("Users");
+        if (collection) {
+            // Obtém todos os users do MongoDB
+            const users = (await collection?.collection?.find({}).toArray() as User[]);
+            return users;
+
+        } else {
+            // Joga um novo erro caso não exista uma collection
+            throw new Error("Collections Users estava nulo!");
+        }
     }
 
     // Define um método para o request GET no /user
@@ -115,22 +118,39 @@ export class UserRestController extends UserRoutes {
         // Configura o router para uma uri
         this.router.post(uri, async (req, res) =>{
             try{
-                // Cria um objeto User utilizando o json recebido no corpo do request
-                const user = req.body as User;
-                user.password = await HashIt(user.password)
-                console.log(req.body)
+                var listUsername = await this.getListUsername()
+                var listEmail = await this.getListEmail()
 
-                // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
-                const result = await getCollection("Users")?.collection?.insertOne(user);
-                console.log(result)
+                if(req.body){
+
+                    if((listUsername.includes(req.body.username))){
+                        throw new Error("O username já existe no sistema!!");
+                        
+                    }else if(listEmail.includes(req.body.email)){
+                        throw new Error("O email já existe no sistema!!");
+                        
+                    }
+
+                    // Cria um objeto User utilizando o json recebido no corpo do request
+                    const user = req.body as User;
+                    user.password = await HashIt(user.password)
+                    console.log(req.body)
+
+                    // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
+                    const result = await getCollection("Users")?.collection?.insertOne(user);
+                    console.log(result)
 
 
-                // Exibe o resultado da operação anterior
-                result
-                    ? (res.status(200).send("User criado com sucesso com o id " + result.insertedId),
-                        console.log("User criado com sucesso com o id " + result.insertedId))
-                    : (res.status(500).send("User não foi criado com sucesso"),
-                        console.log("User não foi criado com sucesso"))
+                    // Exibe o resultado da operação anterior
+                    result
+                        ? (res.status(200).send("User criado com sucesso com o id " + result.insertedId),
+                            console.log("User criado com sucesso com o id " + result.insertedId))
+                        : (res.status(500).send("User não foi criado com sucesso"),
+                            console.log("User não foi criado com sucesso"))
+                }else{
+                    throw new Error("O payload veio vazio!!");
+                    
+                }
             } catch(error: any) {
                 // Imprime um erro no console
                 console.log(error);
@@ -139,6 +159,26 @@ export class UserRestController extends UserRoutes {
                 res.status(400).send(error.message);
             }
         })
+    }
+
+    private async getListUsername(): Promise<string[]>{
+        var users = await this.getAllUsers();
+        var usernames: string[] = [];
+        (users).forEach(( user ) => {
+            usernames.push(user.username)
+        })
+
+        return usernames;
+    }
+
+    private async getListEmail(): Promise<string[]>{
+        var users = await this.getAllUsers();
+        var usernames: string[] = [];
+        (users).forEach(( user ) => {
+            usernames.push(user.email)
+        })
+
+        return usernames;
     }
 
     // Define um método para o request PUT no /user
