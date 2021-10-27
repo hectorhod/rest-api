@@ -45,20 +45,6 @@ export class AlunoRestController extends AlunoRoutes {
         });
     }
 
-    private async createUser(userBody:any): Promise<User>{
-        try{
-            var route = getRoute("userRest") as UserRestController;
-            if(route){
-                var result: User = await route.createUser(userBody.username, userBody.password, userBody.email, userBody.pessoa, TipoPessoa.Aluno, false);
-                return result;
-            }else{
-                throw new Error(`A rota não foi encontrada`);
-            }
-        }catch(error: any){
-            throw new Error(`Ocorreu um erro ao criar um usuario: ${error}`);
-        }
-    }
-
     // Define um método para o request POST no /aluno
     protected post(uri:string){
         // Configura o router para uma uri
@@ -94,9 +80,9 @@ export class AlunoRestController extends AlunoRoutes {
         // Configura o router para uma uri
         this.router.post(uri, async (req, res) =>{
             try{
-                if(req.body){       
-                    
-                    var result: User = await this.createUser(req.body);
+                var route = getRoute("userRest") as UserRestController;
+                if(req.body && route){       
+                    var result: User = await route.createUser(req.body.username, req.body.password, req.body.email, req.body.pessoa, TipoPessoa.Professor, false);
 
                     // Exibe o resultado da operação anterior
                     result
@@ -105,7 +91,7 @@ export class AlunoRestController extends AlunoRoutes {
                         : (res.status(500).send("User não foi criado com sucesso"),
                             console.log("User não foi criado com sucesso"))
                 }else{
-                    throw new Error("O payload veio vazio!!");
+                    throw new Error("O payload ou route veio vazio!!");
                     
                 }
             } catch(error: any) {
@@ -117,6 +103,7 @@ export class AlunoRestController extends AlunoRoutes {
             }
         })
     }
+
 
     // Define um método para o request PUT no /aluno
     protected put(uri:string){

@@ -22,13 +22,13 @@ export class LoginRestController extends LoginRoutes {
             try{
                 if(req.body){
                     const route:UserRestController = getRoute("userRest") as UserRestController;
-                    const id = req.body.userId;
+                    const username = req.body.username;
                     const password = req.body.password;
-                    if(route && id && password){
-                        const user:User = await route.getUserById(id) as User;
+                    if(route && username && password){
+                        const user:User = await route.getUserByUsername(username) as User;
                         if(await CompareIt(password,user)){
-                            console.log(`usuário ${user.username} logou`);
-                            res.status(200).send(`usuário ${user.username} logou`);
+                            console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
+                            res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
                         }else{
                             console.log(`usuário ${user.username} não logou`);
                             res.status(400).send("Senha incorreta");

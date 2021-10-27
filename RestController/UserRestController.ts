@@ -242,6 +242,12 @@ export class UserRestController extends UserRoutes {
         return result;
     }
 
+    public async getUserByUsername(username: string): Promise<User>{
+        const query = { username:username };
+        const result = await getCollection("Users")?.collection?.findOne(query) as User;
+        return result;
+    }
+
     public async createUser(username: string, password: string, email: string, pessoa: ObjectId, tipoPessoa: TipoPessoa | undefined, active: boolean): Promise<User>{
         try{
             var listUsername = await this.getListUsername()

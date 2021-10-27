@@ -4,6 +4,10 @@ import { getCollection } from "../MongoDB/MongoController";
 import { Express } from "express";
 import { ProfessorRoutes } from "./RoutesControllers/ProfessorRoutes";
 import { Professor } from "../Models/Pessoas/Professor";
+import { User } from "../Models/Pessoas/User";
+import { UserRestController } from "./UserRestController";
+import { getRoute } from "./RestController";
+import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 
 // Define a classe ProfessorRestController, a qual controla os requests recebidos no /professor
 export class ProfessorRestController extends ProfessorRoutes {
@@ -61,6 +65,35 @@ export class ProfessorRestController extends ProfessorRoutes {
                         console.log("Professor criado com sucesso com o id " + result.insertedId))
                     : (res.status(500).send("Professor não foi criado com sucesso"),
                         console.log("Professor não foi criado com sucesso"))
+            } catch(error: any) {
+                // Imprime um erro no console
+                console.log(error);
+
+                // Devolve uma mensagem para o remetente com o erro e um código de status
+                res.status(400).send(error.message);
+            }
+        })
+    }
+    
+    // Define um método para o request POST no /user
+    protected postUser(uri:string){
+        // Configura o router para uma uri
+        this.router.post(uri, async (req, res) =>{
+            try{
+                var route = getRoute("userRest") as UserRestController;
+                if(req.body && route){       
+                    var result: User = await route.createUser(req.body.username, req.body.password, req.body.email, req.body.pessoa, TipoPessoa.Professor, false);
+
+                    // Exibe o resultado da operação anterior
+                    result
+                        ? (res.status(200).send("User criado com sucesso com o id " + result._id),
+                            console.log("User criado com sucesso com o id " + result._id))
+                        : (res.status(500).send("User não foi criado com sucesso"),
+                            console.log("User não foi criado com sucesso"))
+                }else{
+                    throw new Error("O payload ou route veio vazio!!");
+                    
+                }
             } catch(error: any) {
                 // Imprime um erro no console
                 console.log(error);
