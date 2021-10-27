@@ -12,7 +12,7 @@ dotenv.config({path: './banco.env'});
 export class MongoController {
 
     // Lê a informação do "banco.env" e obtém a uri para conexão
-    readonly uri:string = process.env.BD_CONN_URI as string;
+    private readonly uri:string = process.env.BD_CONN_URI as string;
 
     // Cria um client para a conexão com o MongoDB
     private client:mongoDB.MongoClient = new mongoDB.MongoClient(this.uri);
@@ -27,7 +27,7 @@ export class MongoController {
             this.client.connect()
 
             // Imprime no console a conexão realizada
-            console.log('Conextado ao banco de dados: %s',this.db.databaseName);
+            console.log('Conectado ao banco de dados: %s',this.db.databaseName);
         }catch(error: any){
              // Imprime no console o erro
              console.log(error);

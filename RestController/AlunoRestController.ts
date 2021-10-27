@@ -4,6 +4,10 @@ import { getCollection } from "../MongoDB/MongoController";
 import { Aluno } from "../Models/Pessoas/Aluno";
 import { AlunoRoutes } from "./RoutesControllers/AlunoRoutes";
 import { Express } from "express";
+import { getRoute } from "./RestController";
+import { UserRestController } from "./UserRestController";
+import { User } from "../Models/Pessoas/User";
+import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 
 // Define a classe AlunoRestController, a qual controla os requests recebidos no /aluno
 export class AlunoRestController extends AlunoRoutes {
@@ -14,7 +18,7 @@ export class AlunoRestController extends AlunoRoutes {
     }
     
     // Define um método para o request GET no /aluno
-    public get(uri:string) {
+    protected get(uri:string) {
         // Configura o router para uma uri
         this.router.get(uri, async (_req, res) => {
             try{
@@ -41,8 +45,22 @@ export class AlunoRestController extends AlunoRoutes {
         });
     }
 
+    private async createUser(userBody:any): Promise<User>{
+        try{
+            var route = getRoute("userRest") as UserRestController;
+            if(route){
+                var result: User = await route.createUser(userBody.username, userBody.password, userBody.email, userBody.pessoa, TipoPessoa.Aluno, false);
+                return result;
+            }else{
+                throw new Error(`A rota não foi encontrada`);
+            }
+        }catch(error: any){
+            throw new Error(`Ocorreu um erro ao criar um usuario: ${error}`);
+        }
+    }
+
     // Define um método para o request POST no /aluno
-    public post(uri:string){
+    protected post(uri:string){
         // Configura o router para uma uri
         this.router.post(uri, async (req, res) =>{
             try{
@@ -71,8 +89,37 @@ export class AlunoRestController extends AlunoRoutes {
         })
     }
 
+    // Define um método para o request POST no /user
+    protected postUser(uri:string){
+        // Configura o router para uma uri
+        this.router.post(uri, async (req, res) =>{
+            try{
+                if(req.body){       
+                    
+                    var result: User = await this.createUser(req.body);
+
+                    // Exibe o resultado da operação anterior
+                    result
+                        ? (res.status(200).send("User criado com sucesso com o id " + result._id),
+                            console.log("User criado com sucesso com o id " + result._id))
+                        : (res.status(500).send("User não foi criado com sucesso"),
+                            console.log("User não foi criado com sucesso"))
+                }else{
+                    throw new Error("O payload veio vazio!!");
+                    
+                }
+            } catch(error: any) {
+                // Imprime um erro no console
+                console.log(error);
+
+                // Devolve uma mensagem para o remetente com o erro e um código de status
+                res.status(400).send(error.message);
+            }
+        })
+    }
+
     // Define um método para o request PUT no /aluno
-    public put(uri:string){
+    protected put(uri:string){
         // Configura o router para uma uri
         this.router.put(uri+'/:id', async (req,res) => {
             try{
@@ -110,7 +157,7 @@ export class AlunoRestController extends AlunoRoutes {
     }
 
     // Define um método para o request DELETE no /aluno
-    public delete(uri:string){
+    protected delete(uri:string){
         // Configura o router para uma uri
         this.router.delete(uri+'/:id', async (req,res) => {
             try{

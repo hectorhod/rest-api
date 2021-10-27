@@ -4,6 +4,7 @@ import { getCollection } from "../MongoDB/MongoController";
 import { HashIt, User } from "../Models/Pessoas/User";
 import { Express } from "express";
 import { UserRoutes } from "./RoutesControllers/UserRoutes";
+import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 
 // Define a classe UserRestController, a qual controla os requests recebidos no /user
 export class UserRestController extends UserRoutes {
@@ -118,33 +119,14 @@ export class UserRestController extends UserRoutes {
         // Configura o router para uma uri
         this.router.post(uri, async (req, res) =>{
             try{
-                var listUsername = await this.getListUsername()
-                var listEmail = await this.getListEmail()
-
-                if(req.body){
-
-                    if((listUsername.includes(req.body.username))){
-                        throw new Error("O username já existe no sistema!!");
-                        
-                    }else if(listEmail.includes(req.body.email)){
-                        throw new Error("O email já existe no sistema!!");
-                        
-                    }
-
-                    // Cria um objeto User utilizando o json recebido no corpo do request
-                    const user = req.body as User;
-                    user.password = await HashIt(user.password)
-                    console.log(req.body)
-
-                    // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
-                    const result = await getCollection("Users")?.collection?.insertOne(user);
-                    console.log(result)
-
+                if(req.body){       
+                    
+                    var result: User = await this.createUser(req.body.username,req.body.password,req.body.email,req.body.pessoa,req.body.tipoPessoa,req.body.active)
 
                     // Exibe o resultado da operação anterior
                     result
-                        ? (res.status(200).send("User criado com sucesso com o id " + result.insertedId),
-                            console.log("User criado com sucesso com o id " + result.insertedId))
+                        ? (res.status(200).send("User criado com sucesso com o id " + result._id),
+                            console.log("User criado com sucesso com o id " + result._id))
                         : (res.status(500).send("User não foi criado com sucesso"),
                             console.log("User não foi criado com sucesso"))
                 }else{
@@ -258,6 +240,34 @@ export class UserRestController extends UserRoutes {
         const query = { _id:new ObjectId(id) };
         const result = await getCollection("Users")?.collection?.findOne(query) as User;
         return result;
+    }
+
+    public async createUser(username: string, password: string, email: string, pessoa: ObjectId, tipoPessoa: TipoPessoa | undefined, active: boolean): Promise<User>{
+        try{
+            var listUsername = await this.getListUsername()
+            var listEmail = await this.getListEmail()
+
+            if((listUsername.includes(username))){
+                throw new Error("O username já existe no sistema!!");
+                
+            }else if(listEmail.includes(email)){
+                throw new Error("O email já existe no sistema!!");
+                
+            }
+            
+            // Cria um objeto User utilizando o json recebido no corpo do request
+            const user = new User(username,password,email,pessoa,tipoPessoa,active);
+            user.password = await HashIt(user.password)
+            console.log(user)
+
+            // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
+            const result = await getCollection("Users")?.collection?.insertOne(user);
+            console.log(result)
+            return user;
+        }catch(error: any){
+            throw new Error(`Ocorreu um erro ao criar um usuario: ${error}`);
+            
+        }
     }
 
 }

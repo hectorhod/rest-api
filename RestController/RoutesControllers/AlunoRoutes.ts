@@ -11,6 +11,7 @@ export class AlunoRoutes extends CommonRoutes{
 
         // Comando herdado configura o metodo POST
         this.post("/");
+        this.postUser("/postUser")
 
         // Comando herdado configura o metodo PUT
         this.put("/update")
@@ -27,6 +28,8 @@ export class AlunoRoutes extends CommonRoutes{
     constructor(app: Express, routeName:string){
         super(app,Router(),routeName);
     }
+
+    protected postUser(uri:string){ throw new Error("Método não foi declarado!!"); };
 
 
 }

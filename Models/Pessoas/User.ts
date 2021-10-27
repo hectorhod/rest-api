@@ -9,15 +9,17 @@ export class User{
     password: string;
     email: string;
     pessoa: ObjectId;
-    // tipoPessoa: TipoPessoa;
+    tipoPessoa: TipoPessoa | undefined;
+    active: boolean;
 
-    constructor(username:string, password:string, email:string, pessoa: ObjectId, tipoPessoa?: TipoPessoa, id?:ObjectId){
+    constructor(username:string, password:string, email:string, pessoa: ObjectId, tipoPessoa?: TipoPessoa, active?: boolean, id?:ObjectId){
         id? this._id = id : this._id = new ObjectId();
         this.username = username;
         this.email = email;
         this.password = password;
         this.pessoa = pessoa;
-        // this.tipoPessoa = tipoPessoa;
+        tipoPessoa? this.tipoPessoa = tipoPessoa : this.tipoPessoa = undefined;
+        active? this.active = active : this.active = false;
     }
 
 }
