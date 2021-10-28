@@ -1,6 +1,6 @@
 // Realiza a importação dos modulos necessários
 import { ObjectId } from "bson";
-import { Express, json } from "express";
+import express, { Express, json } from "express";
 import { CompareIt, User } from "../Models/Pessoas/User";
 import { CommonRoutes } from "../Routes/CommonRoutes";
 import { getRoute } from "./RestController";
@@ -13,6 +13,24 @@ export class LoginRestController extends LoginRoutes {
     // É um construtor, inicializando a classe pai AlunoRoutes
     constructor(app: Express){
         super(app,"loginRoutes");
+    }
+
+    protected get(uri:string){
+        this.router.get(uri,(req,res) =>{
+            if(req.session.userid){
+                res.send(`Olá ${req.session.userid} <a href=\'/logout'>click to logout</a>`)
+            }else{
+                res.sendFile('/login.html', {root: process.cwd()+"/views/login"})
+            }
+        })
+    }
+    protected getLogout(){
+        this.app.get("/logout", (req, res) => {
+            console.log(req.session)
+            req.session.destroy(() =>{
+                res.redirect('/login');
+            });
+        })
     }
 
     // Define um método para o request POST no /User
@@ -33,8 +51,12 @@ export class LoginRestController extends LoginRoutes {
                             user = await route.getUserByUsername(login) as User;
                         }
                         if(user && await CompareIt(password,user)){
+                            req.session.userid = user.username;
+                            console.log(req.session)
                             console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
-                            res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
+                            res.send(`Olá ${req.session.userid} <a href=\'/logout'>click to logout</a>`)
+
+                            // res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
                         }else{
                             console.log(`usuário ${user.username} não logou`);
                             res.status(400).send("Senha incorreta");
@@ -44,7 +66,7 @@ export class LoginRestController extends LoginRoutes {
                     }
 
                 }else{
-                    res.status(400).send("algo deu errado");
+                    res.status(400).send("O payload veio vazio!!");
                 }
                 
                 

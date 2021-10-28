@@ -285,11 +285,20 @@ export class UserRestController extends UserRoutes {
         }
     }
 
-    // public async activateUser(id: string): Promise<boolean> {
-    //     try{
-
-    //     }
-    // }
+    public async activateUser(id: string): Promise<boolean> {
+        try{
+            const user = await this.queryUser(undefined,undefined,undefined,undefined,undefined,undefined,id);
+            if(!user.active){
+                user.active = true;
+                return true;
+            }else{
+                throw new Error("O usuário já estava ativado!!");                
+            }
+        }catch(error:any){
+            throw new Error(`Ocorreu um erro ao tentar ativar o usuário: ${error}`);
+            
+        }
+    }
 
     private async queryUser(username?: string, password?: string, email?: string, pessoa?: string, tipoPessoa?: TipoPessoa | undefined, active?: boolean, id?: string): Promise<User> {
         try{

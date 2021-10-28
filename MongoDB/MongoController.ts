@@ -18,7 +18,7 @@ export class MongoController {
     private client:mongoDB.MongoClient = new mongoDB.MongoClient(this.uri);
 
     // Lê a informação do "banco.env" e obtém a uri para conexão
-    private db: mongoDB.Db = this.client.db((process.env.BD_CONN_NAME as string));
+    private db: mongoDB.Db = this.client.db(this.getDBName());
 
     // É o construtor da classe
     constructor(){
@@ -51,6 +51,13 @@ export class MongoController {
             // Imprime no console o erro
             console.log(error);
         }
+    }
+
+    public async getConnection():Promise<mongoDB.MongoClient>{
+        return await this.client.connect();
+    }
+    public getDBName():string{
+        return process.env.BD_CONN_NAME as string;
     }
 
 }

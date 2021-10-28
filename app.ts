@@ -16,5 +16,5 @@ mongo.ConnectCollection("Users");
 // console.log(collections)
 
 // Inicializa a API (para inicializar utilize "npm run start" ou "npm run nodemon")
-ApiStart(); 
+ApiStart(mongo.getConnection(),mongo.getDBName()); 
 

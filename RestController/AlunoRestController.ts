@@ -23,6 +23,8 @@ export class AlunoRestController extends AlunoRoutes {
         this.router.get(uri, async (_req, res) => {
             try{
                 // Obtem a COLLECTION necessária da lista de collection
+                console.log(_req.session)
+
                 const collection = getCollection("Alunos");
                 if (collection){
                     // Obtém todos os alunos do MongoDB
