@@ -12,6 +12,8 @@ import { LoginRestController } from "./LoginRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
 import { UserRestController } from "./UserRestController";
 
+const oneDay = 1000*60*60*24;
+
 // Define a porta de hospedagem
 const PORT = 3000;
 
@@ -39,10 +41,11 @@ export function ApiStart(mongoClient: Promise<MongoClient>, dbName: string){
             dbName: dbName,
             crypto: {
                 secret: 'conexaoComOMongo'
-              }
+              },
+            ttl: oneDay
         }),
         cookie: {
-            maxAge: 1000*60*60*24,
+            maxAge: oneDay,
             sameSite: true,
             httpOnly: true,
             secure: false
