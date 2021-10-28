@@ -5,6 +5,7 @@ import { HashIt, User } from "../Models/Pessoas/User";
 import { Express } from "express";
 import { UserRoutes } from "./RoutesControllers/UserRoutes";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
+import { validateEmail } from "./LoginRestController";
 
 // Define a classe UserRestController, a qual controla os requests recebidos no /user
 export class UserRestController extends UserRoutes {
@@ -248,18 +249,28 @@ export class UserRestController extends UserRoutes {
         return result;
     }
 
+    public async getUserByEmail(email: string): Promise<User>{
+        const query = { email:email };
+        const result = await getCollection("Users")?.collection?.findOne(query) as User;
+        return result;
+    }
+
     public async createUser(username: string, password: string, email: string, pessoa: ObjectId, tipoPessoa: TipoPessoa | undefined, active: boolean): Promise<User>{
         try{
             var listUsername = await this.getListUsername()
             var listEmail = await this.getListEmail()
 
+            if(!validateEmail(email)){
+                throw new Error("O email inserido é inválido!!");
+                
+            }
             if((listUsername.includes(username))){
                 throw new Error("O username já existe no sistema!!");
                 
             }else if(listEmail.includes(email)){
                 throw new Error("O email já existe no sistema!!");
-                
             }
+            
             
             // Cria um objeto User utilizando o json recebido no corpo do request
             const user = new User(username,password,email,pessoa,tipoPessoa,active);

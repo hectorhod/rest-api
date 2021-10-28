@@ -22,11 +22,17 @@ export class LoginRestController extends LoginRoutes {
             try{
                 if(req.body){
                     const route:UserRestController = getRoute("userRest") as UserRestController;
-                    const username = req.body.username;
-                    const password = req.body.password;
-                    if(route && username && password){
-                        const user:User = await route.getUserByUsername(username) as User;
-                        if(await CompareIt(password,user)){
+                    const login: string = req.body.login;
+                    const password: string = req.body.password;
+                    if(route && login && password){
+                        var user:User | undefined = undefined;
+
+                        if(validateEmail(login)){
+                            user = await route.getUserByEmail(login) as User;
+                        }else{
+                            user = await route.getUserByUsername(login) as User;
+                        }
+                        if(user && await CompareIt(password,user)){
                             console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
                             res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
                         }else{
@@ -54,4 +60,11 @@ export class LoginRestController extends LoginRoutes {
 
     
 
+    
+
+}
+
+export function validateEmail(email:string): boolean{
+    const er: RegExp = /^\w*(\.\w*)?@\w*\.[a-z]+(\.[a-z]+)?$/
+    return er.test(email)
 }
