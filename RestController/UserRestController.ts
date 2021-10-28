@@ -6,6 +6,7 @@ import { Express } from "express";
 import { UserRoutes } from "./RoutesControllers/UserRoutes";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { validateEmail } from "./LoginRestController";
+import { Filter } from "mongodb";
 
 // Define a classe UserRestController, a qual controla os requests recebidos no /user
 export class UserRestController extends UserRoutes {
@@ -31,19 +32,6 @@ export class UserRestController extends UserRoutes {
                 res.status(500).send(error.message);
             }
         });
-    }
-
-    private async getAllUsers() {
-        const collection = getCollection("Users");
-        if (collection) {
-            // Obtém todos os users do MongoDB
-            const users = (await collection?.collection?.find({}).toArray() as User[]);
-            return users;
-
-        } else {
-            // Joga um novo erro caso não exista uma collection
-            throw new Error("Collections Users estava nulo!");
-        }
     }
 
     // Define um método para o request GET no /user
@@ -237,21 +225,31 @@ export class UserRestController extends UserRoutes {
         })
     }
 
+    private async getAllUsers() {
+        const collection = getCollection("Users");
+        if (collection) {
+            // Obtém todos os users do MongoDB
+            const users = (await collection?.collection?.find({}).toArray() as User[]);
+            return users;
+
+        } else {
+            // Joga um novo erro caso não exista uma collection
+            throw new Error("Collections Users estava nulo!");
+        }
+    }
+
     public async getUserById(id: string): Promise<User>{
-        const query = { _id:new ObjectId(id) };
-        const result = await getCollection("Users")?.collection?.findOne(query) as User;
+        const result = await this.queryUser(undefined,undefined,undefined,undefined,undefined,undefined,id);
         return result;
     }
 
     public async getUserByUsername(username: string): Promise<User>{
-        const query = { username:username };
-        const result = await getCollection("Users")?.collection?.findOne(query) as User;
+        const result = await this.queryUser(username);
         return result;
     }
 
-    public async getUserByEmail(email: string): Promise<User>{
-        const query = { email:email };
-        const result = await getCollection("Users")?.collection?.findOne(query) as User;
+    public async getUserByEmail(email1: string): Promise<User>{
+        const result = await this.queryUser(undefined,undefined,email1);
         return result;
     }
 
@@ -283,6 +281,53 @@ export class UserRestController extends UserRoutes {
             return user;
         }catch(error: any){
             throw new Error(`Ocorreu um erro ao criar um usuario: ${error}`);
+            
+        }
+    }
+
+    // public async activateUser(id: string): Promise<boolean> {
+    //     try{
+
+    //     }
+    // }
+
+    private async queryUser(username?: string, password?: string, email?: string, pessoa?: string, tipoPessoa?: TipoPessoa | undefined, active?: boolean, id?: string): Promise<User> {
+        try{
+            // let query = {_id: id,username:username, password: password, email: email, pessoa: pessoa, tipoPessoa: tipoPessoa, active: active};
+            let query = {} as User;
+            if(username){
+                query.username = username;
+            }
+            if(password){
+                query.password = password;
+            }
+            if(email){
+                query.email = email;
+            }
+            if(pessoa){
+                query.pessoa = new ObjectId(pessoa);
+            }
+            if(tipoPessoa){
+                query.tipoPessoa = tipoPessoa;
+            }
+            if(active){
+                query.active = active;
+            }
+            if(id){
+                query._id = new ObjectId(id);
+            }
+
+            if(query){
+                console.log (query);
+                const result: User = await getCollection("Users")?.collection?.findOne(query) as User;
+                return result;
+
+            }else{
+                throw new Error("Ocorreu um erro ao obter a query");
+                
+            }
+        }catch(error:any){
+            throw new Error(`Ocorreu um erro ao obter o objeto: ${error}`);
             
         }
     }
