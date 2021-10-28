@@ -7,6 +7,7 @@ import { UserRoutes } from "./RoutesControllers/UserRoutes";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { validateEmail } from "./LoginRestController";
 import { Filter } from "mongodb";
+import { nextTick } from "process";
 
 // Define a classe UserRestController, a qual controla os requests recebidos no /user
 export class UserRestController extends UserRoutes {
@@ -19,8 +20,12 @@ export class UserRestController extends UserRoutes {
 // Define um método para o request GET no /professor
     public get(uri:string) {
         // Configura o router para uma uri
-        this.router.get(uri, async (_req, res) => {
+        this.router.get(uri, async (req, res, next) => {
             try{
+                if(!this.validateUser(await this.getUserByUsername(req.session.userid),TipoPessoa.Diretor)){
+                    res.status(400).send(`<p><h2>Acesso Negado !!</h2></p>\n<p><h4>O usuário ${req.session.userid} não tem permissão o suficiente para acessar essa página</h4></p>`);
+                    return;
+                }
                 // Obtem a COLLECTION necessária da lista de collection
                 var users = await this.getAllUsers();
                 res.status(200).send(users);
@@ -243,9 +248,13 @@ export class UserRestController extends UserRoutes {
         return result;
     }
 
-    public async getUserByUsername(username: string): Promise<User>{
-        const result = await this.queryUser(username);
-        return result;
+    public async getUserByUsername(username: string | undefined): Promise<User>{
+        if(username){
+            const result = await this.queryUser(username);
+            return result;
+        }else{
+            throw new Error("o username é nulo!!");            
+        }
     }
 
     public async getUserByEmail(email1: string): Promise<User>{
@@ -297,6 +306,14 @@ export class UserRestController extends UserRoutes {
         }catch(error:any){
             throw new Error(`Ocorreu um erro ao tentar ativar o usuário: ${error}`);
             
+        }
+    }
+
+    public validateUser(user: User, required: TipoPessoa): boolean{
+        if(user.active && user.tipoPessoa && user.tipoPessoa === required){
+            return true;
+        }else{
+            return false;
         }
     }
 
