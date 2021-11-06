@@ -1,5 +1,7 @@
 // Realiza a importação dos modulos necessários
-import {Router, Express} from "express";
+import {Router, Express, Request} from "express";
+import { Api } from "../RestController/RestController";
+import { getRoute, routes } from "./Routes";
 
 // Define a classe abstrata CommonRoutes, a qual define a base dos caminhos ROUTE
 export abstract class CommonRoutes {
@@ -40,4 +42,50 @@ export abstract class CommonRoutes {
         return this.router;
     }
     
+}
+
+export enum METHOD{
+    GET = "get",
+    POST = "post",
+    PUT = "put",
+    DELETE = "delete",
+}
+
+const getRouteTest = function (routeName:string){
+    const tmpApi = import('../RestController/RestController').then(({Api}) => Api);
+
+    return tmpApi.then((Api) =>{
+        var route = Api.routes.find((route) => {
+            return route.getName() === routeName
+        });
+
+        if(route){
+            return route ;
+        }else {
+            throw new Error("Não existia a route "+routeName);
+        }
+
+    })
+}
+
+export function routeConfig (method:METHOD, route:string, routeName: string): MethodDecorator {
+    const router = getRouteTest(routeName)
+    if(router != null && !router){
+        throw new Error("O router não foi encontrado");        
+    }
+    return function(
+        target: Object,
+        propertyKey: string | symbol,
+        descriptor: PropertyDescriptor
+    ){
+        const response = (req: Request, res: any) => {
+            const original = descriptor.value(req,res)
+            res.status(200).json(original)
+        }
+
+        router.then((router) => {
+            router.getRouter()[method](route,response)
+        })
+        // route[method](route,response);
+    }
 }

@@ -6,7 +6,7 @@ import { ProfessorRoutes } from "./RoutesControllers/ProfessorRoutes";
 import { Professor } from "../Models/Pessoas/Professor";
 import { User } from "../Models/Pessoas/User";
 import { UserRestController } from "./UserRestController";
-import { getRoute } from "./RestController";
+import { getRoute } from "../Routes/Routes";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 
 // Define a classe ProfessorRestController, a qual controla os requests recebidos no /professor

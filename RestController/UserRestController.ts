@@ -344,7 +344,6 @@ export class UserRestController extends UserRoutes {
             }
 
             if(query){
-                console.log (query);
                 const result: User = await getCollection("Users")?.collection?.findOne(query) as User;
                 return result;
 

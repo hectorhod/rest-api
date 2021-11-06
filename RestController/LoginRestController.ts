@@ -1,9 +1,9 @@
 // Realiza a importação dos modulos necessários
-import { ObjectId } from "bson";
-import express, { Express, json } from "express";
+import { Express } from "express";
 import { CompareIt, User } from "../Models/Pessoas/User";
-import { CommonRoutes } from "../Routes/CommonRoutes";
-import { getRoute } from "./RestController";
+import { METHOD } from "../Routes/CommonRoutes";
+import { getRoute } from "../Routes/Routes";
+import { Api } from "./RestController";
 import { LoginRoutes } from "./RoutesControllers/LoginRoutes";
 import { UserRestController } from "./UserRestController";
 
@@ -24,9 +24,10 @@ export class LoginRestController extends LoginRoutes {
             }
         })
     }
-    protected getLogout(){
-        this.app.get("/logout", (req, res) => {
-            console.log(req.session)
+
+    protected async getLogout(){
+        let tmpApp = await import('./RestController').then(({Api}) => Api.app)
+        tmpApp.get("/logout", (req: any, res: any) => {
             req.session.destroy(() =>{
                 res.redirect('/login');
             });
@@ -65,7 +66,8 @@ export class LoginRestController extends LoginRoutes {
                     }
 
                 }else{
-                    res.status(400).send("O payload veio vazio!!");
+                    console.log(req.body.login)
+                    res.status(400).send(`${req.body} | ${req.params} |`);
                 }
                 
                 

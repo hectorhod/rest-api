@@ -1,6 +1,6 @@
 import express, { Router,Express } from "express";
 import { CommonRoutes } from "../../Routes/CommonRoutes";
-import { app } from "../RestController";
+import { Api } from "../RestController";
 
 export class LoginRoutes extends CommonRoutes{
     configureRoutes(): Router {
@@ -10,7 +10,11 @@ export class LoginRoutes extends CommonRoutes{
         this.post("/");
 
         // Define a raiz desse ROUTE no caso sendo /login
-        app.use('/login', this.router);
+        let tmpApp = import('../RestController').then(({Api}) => Api.app)
+        tmpApp.then((app) =>{
+            app.use('/login', this.router);
+        })
+        
         return this.router;
     }
 
@@ -18,7 +22,7 @@ export class LoginRoutes extends CommonRoutes{
         super(app,Router(),name);
     }
 
-    protected getLogout(){ throw new Error("não declarado");}
+    protected getLogout(){ throw new Error("O método não foi declarado!!!");}
     
 
 }

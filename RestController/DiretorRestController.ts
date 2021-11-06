@@ -4,7 +4,7 @@ import { getCollection } from "../MongoDB/MongoController";
 import { Express } from "express";
 import { Diretor } from "../Models/Pessoas/Diretor";
 import { DiretorRoutes } from "./RoutesControllers/DiretorRoutes";
-import { getRoute } from "./RestController";
+import { getRoute } from "../Routes/Routes";
 import { UserRestController } from "./UserRestController";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";

@@ -5,7 +5,7 @@ import { Express } from "express";
 import { LibraryRoutes } from "./RoutesControllers/LibraryRoutes";
 import { Livro } from "../Models/Livro/Livro";
 import { getArchive } from "../pdfhandler/pdfhandler";
-import { getRoute } from "./RestController";
+import { getRoute } from "../Routes/Routes";
 
 // Define a classe LibraryRestController, a qual controla os requests recebidos no /biblioteca
 export class LibraryRestController extends LibraryRoutes {
