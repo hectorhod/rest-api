@@ -171,15 +171,6 @@ export class LibraryRestController extends LibraryRoutes {
                 // Devolve uma mensagem para o remetente com o erro e um código de status
                 res.status(400).send(error.message);
             }
-    }
-
-    //Pelo santo amor, não mecha com esses negocios ainda (fase de teste)
-    @routeConfig(METHOD.GET,'/test', "libraryRest")
-    protected getTest(){
-        return "Hello World";
-    }
-
-
-    
+    }    
 
 }
