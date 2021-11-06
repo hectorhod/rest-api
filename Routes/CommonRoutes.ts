@@ -80,7 +80,7 @@ export function routeConfig (method:METHOD, route:string, routeName: string): Me
     ){
         const response = (req: Request, res: any) => {
             const original = descriptor.value(req,res)
-            res.status(200).json(original)
+            // res.status(200).json(original)
         }
 
         router.then((router) => {
