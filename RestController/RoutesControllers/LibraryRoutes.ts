@@ -1,6 +1,7 @@
 // Realiza a importação dos modulos necessários
 import { Express, Router } from "express";
-import { CommonRoutes } from "../../Routes/CommonRoutes";
+import { CommonRoutes, METHOD, routeConfig } from "../../Routes/CommonRoutes";
+import { getRoute } from "../../Routes/Routes";
 
 // Define a classe LibraryRoutes, que controla os caminhos do endereço /aluno
 export class LibraryRoutes extends CommonRoutes{
@@ -31,6 +32,12 @@ export class LibraryRoutes extends CommonRoutes{
 
     protected getById(uri:string){throw new Error("O método não foi implementado!!!");
     };
+
+    //Pelo santo amor, não mecha com esses negocios ainda (fase de teste)
+    @routeConfig(METHOD.GET,'/test', "libraryRest")
+    protected getTest(){
+        return "Hello World";
+    }
 
 }
 
