@@ -1,17 +1,17 @@
 // Realiza a importação dos modulos necessários
 import MongoStore from "connect-mongo";
-import express from "express";
+import express, {Express} from "express";
 import session from "express-session";
 import { MongoClient } from "mongodb";
-import { routesStart } from "../Routes/Routes";
 import * as dotenv from "dotenv"
 import { MongoController } from "../MongoDB/MongoController";
 import { CommonRoutes } from "../Routes/CommonRoutes";
+import { Routes } from "../Routes/Routes";
+import { LibraryRestController } from "./LibraryRestController";
 import { AlunoRestController } from "./AlunoRestController";
 import { DiretorRestController } from "./DiretorRestController";
-import { LibraryRestController } from "./LibraryRestController";
-import { LoginRestController } from "./LoginRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
+import { LoginRestController } from "./LoginRestController";
 import { UserRestController } from "./UserRestController";
 
 dotenv.config({path: './banco.env'});
@@ -20,6 +20,8 @@ const oneDay = 1000*60*60*24;
 
 // Define a porta de hospedagem
 const PORT = 3000;
+export const servers:Api[] = [];
+
 
 // Define o tipo de servidor
 declare module 'express-session' {
@@ -29,16 +31,43 @@ declare module 'express-session' {
 }
 
 export class Api{
+    private _serverName: string;
     private static dbName = process.env.BD_CONN_NAME
     private static mongo:MongoController = new MongoController();
     private static mongoClient = Api.mongo.getConnection();
-    public static app = express();
-    public static routes:Array<CommonRoutes> = [];
+    private readonly _app: Express;
+    private _routes:any;
 
-    constructor() {
+    constructor(serverName: string) {
+        this._serverName = serverName;
+        this._app = express()
         Api.collectionsStart();
         this.configureMiddleware();
-        Api.app.use(session({
+        
+        servers.push(this)
+        this._routes = new Routes(this);
+        // Define qual porta o sistema estará observando
+        this._app.listen(PORT, () => {
+            console.log("Servidor rodando na porta " + PORT);
+        });    
+    }
+
+    private static collectionsStart(){
+        Api.mongo.ConnectCollection("Alunos");
+        Api.mongo.ConnectCollection("Professors");
+        Api.mongo.ConnectCollection("Diretors");
+        Api.mongo.ConnectCollection("Livros");
+        Api.mongo.ConnectCollection("Users");
+    }
+
+    public configureMiddleware() {
+        // Required for POST requests
+        this._app.use(express.json());
+        this._app.use(express.urlencoded({extended: true}))    
+        this._app.use('/login/static', express.static(process.cwd()+"/views/login"));
+
+        //session & cookies
+        this._app.use(session({
             secret:"tenstandoEssabagaçadeSesSion",
             resave:false,
             saveUninitialized: true,
@@ -57,39 +86,9 @@ export class Api{
                 secure: false
             }
         }))
-        
-
-        Api.routes = [
-            new AlunoRestController(Api.app),
-            new ProfessorRestController(Api.app),
-            new DiretorRestController(Api.app),
-            new LibraryRestController(Api.app),
-            new UserRestController(Api.app),
-            new LoginRestController(Api.app)
-        ];
-        // routesStart(Api.app);
-        // Define qual porta o sistema estará observando
-        Api.app.listen(PORT, () => {
-            console.log("Servidor rodando na porta " + PORT);
-        });
-    }
-
-    private static collectionsStart(){
-        Api.mongo.ConnectCollection("Alunos");
-        Api.mongo.ConnectCollection("Professors");
-        Api.mongo.ConnectCollection("Diretors");
-        Api.mongo.ConnectCollection("Livros");
-        Api.mongo.ConnectCollection("Users");
-    }
-
-    public configureMiddleware() {
-        // Required for POST requests
-        Api.app.use(express.json());
-        Api.app.use(express.urlencoded({extended: true}))    
-        Api.app.use('/login/static', express.static(process.cwd()+"/views/login"));
 
         // CORS
-        Api.app.use(function (req, res, next) {
+        this._app.use(function (req, res, next) {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader("Access-Control-Allow-Credentials", "true");
             res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
@@ -97,29 +96,36 @@ export class Api{
             next();
         });
     }
+
+    get app(): Express{
+        return this._app;
+    }
+    get routes(): Routes{
+        return this._routes;
+    }
+    get serverName(): string{
+        return this._serverName;
+    }
 }
 
-function ApiConfig(mongoClient: Promise<MongoClient>, dbName: string | undefined): MethodDecorator{
-    // Define que a api vai receber JSON/Application
-    let tmpApp = import('./RestController').then(({Api}) => Api);
-    tmpApp.then((Api) =>{
-        
-
-    })
+export function getServer(serverName:string){
     
-    return function(
-        target: Object,
-        propertyKey: string | symbol,
-        descriptor: PropertyDescriptor
-    ){}
+    let serverReturn = servers.find((api) =>{
+        return api.serverName === serverName
+    })
+    if(serverReturn){
+        return serverReturn;
+    }else {
+        throw new Error("Não existia o server "+serverName);
+    }
 }
 
-// Define um endereço de escuta para responder (neste caso localhost:port/)
-Api.app.get("/", (req: any, res: any, next: any) => {
-     
-
-    console.log("Acesso ao base", req.session);
-    res.status(200).json("Acesso ao base")
-})
-
+export const controllers = [
+    LibraryRestController,
+    AlunoRestController,
+    DiretorRestController,
+    ProfessorRestController,
+    LoginRestController,
+    UserRestController
+]
 // export { app };

@@ -4,20 +4,22 @@ import { getCollection } from "../MongoDB/MongoController";
 import { Express, Request, Response } from "express";
 import { LibraryRoutes } from "./RoutesControllers/LibraryRoutes";
 import { Livro } from "../Models/Livro/Livro";
-import { getArchive } from "../pdfhandler/pdfhandler";
-import { getRoute } from "../Routes/Routes";
-import { routeConfig, METHOD } from "../Routes/CommonRoutes";
+import { METHOD } from "../Routes/method.enum";
+import { routeConfig } from "../Routes/routes.decorator";
+import { Api } from "./RestController";
+import { controller } from "../Routes/controller.decorator";
 
 // Define a classe LibraryRestController, a qual controla os requests recebidos no /biblioteca
+@controller('/biblioteca')
 export class LibraryRestController extends LibraryRoutes {
 
     // É um construtor, inicializando a classe pai AlunoRoutes
-    constructor(app: Express){
-        super(app,"libraryRest");
+    constructor(server: Api){
+        super(server,"libraryRest");
     }
     
     // Define um método para o request GET no /biblioteca
-    @routeConfig(METHOD.GET,'/','libraryRest')
+    @routeConfig(METHOD.GET,'/')
     protected async getLivros(req:Request, res:Response) {
         try{
             // Obtem a COLLECTION necessária da lista de collection
@@ -43,7 +45,7 @@ export class LibraryRestController extends LibraryRoutes {
     }
 
     // Define um método para o request GET no /biblioteca
-    @routeConfig(METHOD.GET,'/id/:id','libraryRest')
+    @routeConfig(METHOD.GET,'/id/:id')
     protected async getById(req:Request, res:Response) {
         try{
             if (req.params?.id){
@@ -77,16 +79,14 @@ export class LibraryRestController extends LibraryRoutes {
     }
 
     // Define um método para o request POST no /biblioteca
-    @routeConfig(METHOD.POST,'/','libraryRest')
+    @routeConfig(METHOD.POST,'/')
     protected async postLivro(req:Request, res:Response){
         try{
             // Cria um objeto Livro utilizando o json recebido no corpo do request
             const livro = req.body as Livro;
-            console.log(req.body)
 
             // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
             const result = await getCollection("Livros")?.collection?.insertOne(livro);
-            console.log(result)
 
 
             // Exibe o resultado da operação anterior
@@ -105,7 +105,7 @@ export class LibraryRestController extends LibraryRoutes {
     }
 
     // Define um método para o request PUT no /biblioteca
-    @routeConfig(METHOD.PUT,'/update/:id','libraryRest')
+    @routeConfig(METHOD.PUT,'/update/:id',)
     protected async updateLivro(req:Request, res:Response){
         try{
         if (req.params?.id){
@@ -141,7 +141,7 @@ export class LibraryRestController extends LibraryRoutes {
     }
 
     // Define um método para o request DELETE no /biblioteca
-    @routeConfig(METHOD.DELETE,'/delete/:id','libraryRest')
+    @routeConfig(METHOD.DELETE,'/delete/:id')
     protected async deleteLivro(req:Request, res:Response){
             try{
                 if (req.params.id){

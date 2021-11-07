@@ -1,30 +1,12 @@
-import { Router,Express } from "express";
+import { Router,Express, Request, Response } from "express";
 import { CommonRoutes } from "../../Routes/CommonRoutes";
+import { Api } from "../RestController";
 
 export class DiretorRoutes extends CommonRoutes{
-    
-    public configureRoutes():Router{
-         // Comando herdado configura o metodo GET
-         this.get("/");
 
-         // Comando herdado configura o metodo POST
-         this.post("/");
-         this.postUser("/postUser")
- 
-         // Comando herdado configura o metodo PUT
-         this.put("/update")
- 
-         // Comando herdado configura o metodo DELETE
-         this.delete("/delete")
- 
-         // Define a raiz desse ROUTE no caso sendo /diretor
-         this.app.use('/diretor', this.router);
-         return this.router;
+    constructor(server: Api,routeName:string){
+        super(server,Router(),routeName);
     }
 
-    constructor(app:Express,routeName:string){
-        super(app,Router(),routeName);
-    }
-
-    protected postUser(uri:string){ throw new Error("Método não foi declarado!!"); };
+    protected postUser(req:Request, res:Response){ throw new Error("Método não foi declarado!!"); };
 }

@@ -1,35 +1,17 @@
 // Realiza a importação dos modulos necessários
-import { Express, Router } from "express";
+import { Express, Router, Request, Response } from "express";
 import { CommonRoutes } from "../../Routes/CommonRoutes";
+import { Api } from "../RestController";
 
 // Define a classe AlunoRoutes, que controla os caminhos do endereço /aluno
 export class AlunoRoutes extends CommonRoutes{
-    // Comando herdado para configurar os endereços observados
-    configureRoutes(): Router {
-        // Comando herdado configura o metodo GET
-        this.get("/");
-
-        // Comando herdado configura o metodo POST
-        this.post("/");
-        this.postUser("/postUser")
-
-        // Comando herdado configura o metodo PUT
-        this.put("/update")
-
-        // Comando herdado configura o metodo DELETE
-        this.delete("/delete")
-
-        // Define a raiz desse ROUTE no caso sendo /aluno
-        this.app.use('/aluno', this.router);
-        return this.router;
-    }
     
     // É um construtor, inicializando a classe pai CommonRoutes
-    constructor(app: Express, routeName:string){
-        super(app,Router(),routeName);
+    constructor(server: Api, routeName:string){
+        super(server,Router(),routeName);
     }
 
-    protected postUser(uri:string){ throw new Error("Método não foi declarado!!"); };
+    protected postUser(req:Request, res:Response){ throw new Error("Método não foi declarado!!"); };
 
 
 }

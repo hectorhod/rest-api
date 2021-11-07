@@ -1,50 +1,67 @@
 import { Express } from "express";
+import { Handler } from "express-serve-static-core";
 import { AlunoRestController } from "../RestController/AlunoRestController";
 import { DiretorRestController } from "../RestController/DiretorRestController";
 import { LibraryRestController } from "../RestController/LibraryRestController";
 import { LoginRestController } from "../RestController/LoginRestController";
 import { ProfessorRestController } from "../RestController/ProfessorRestController";
-import { Api } from "../RestController/RestController";
+import { Api, controllers } from "../RestController/RestController";
 import { UserRestController } from "../RestController/UserRestController";
-import { CommonRoutes, METHOD } from "./CommonRoutes";
+import { CommonRoutes } from "./CommonRoutes";
+import { MetadataKeys } from "./controller.decorator";
+import { METHOD } from './method.enum';
+import { IRouter } from "./routes.decorator";
 
-export const routes:Array<CommonRoutes> = new Array<CommonRoutes>();
 
-export function routesStart(application: Express){
-    if(routes.length === 0){
-        // Empurra uma ROUTE para a lista de routes
-        routes.push(new AlunoRestController(application));
-        routes.push(new ProfessorRestController(application));
-        routes.push(new DiretorRestController(application));
-        routes.push(new LibraryRestController(application));
-        routes.push(new UserRestController(application));
-        routes.push(new LoginRestController(application));
-    }else{
-        console.log("As rotas já estão inicializada, o que você planeja?")
+// const routes:Array<CommonRoutes> = [
+//     new AlunoRestController(Api.app),
+//     new ProfessorRestController(Api.app),
+//     new DiretorRestController(Api.app),
+//     new LibraryRestController(Api.app),
+//     new UserRestController(Api.app),
+//     new LoginRestController(Api.app)
+// ];
+
+export class Routes{
+    private _server:Api;
+    get server(){
+        return this._server;
     }
-}
 
-// function getRoutes(routeName:string){
-//     // Procura na lista de routes a ROUTE com nome especificado
-//     try{
-//         var route = routes.find((route) => {
-//             return route.getName() === routeName
-//         });
-        
-//         if(route){
-//             return route ;
-//         }else {
-//             throw new Error("Não existia a route "+routeName);
-//         }
+    private _routes: CommonRoutes[] = [];
+    get routes(){
+        return this._routes;
+    }
 
-//     }catch(error: any){
-//         // Imprime no console o erro
-//         console.log(error);
-//     }
-// }
-export const getRoute = function (routeName:string){
-    try{
-        var route = routes.find((route) => {
+    constructor(server:Api){
+        this._server = server;
+        const info: Array<{api: string, handler: string}> = [];
+        controllers.forEach((controllerClass) =>{
+            const controllerInstance: CommonRoutes = new controllerClass(this._server);
+            const controllerMethods: { [handlerName: string]: Handler} = controllerInstance as any
+            const path = Reflect.getMetadata(MetadataKeys.BASE_PATH, controllerClass);
+            const routers: IRouter[] = Reflect.getMetadata(MetadataKeys.ROUTERS, controllerClass);
+            const exRouter = controllerInstance.router
+
+            if(routers){
+                routers.forEach(({method, path, handlerName, rootPath}) => {
+                    if(!rootPath){
+                        exRouter[method as METHOD](path, controllerMethods[String(handlerName)].bind(controllerMethods));
+                    }else{
+                        this._server.app[method as METHOD](path, controllerMethods[String(handlerName)].bind(controllerMethods))
+                    }
+                });
+            }
+            if(path){
+                this._server.app.use(path, exRouter)
+            }
+            this._routes.push(controllerInstance)  
+
+        })
+    }
+
+    public getRoute(routeName:string){
+        var route = this._routes.find((route) => {
             return route.getName() === routeName
         });
         
@@ -53,13 +70,11 @@ export const getRoute = function (routeName:string){
         }else {
             throw new Error("Não existia a route "+routeName);
         }
-
-    }catch(error: any){
-        // Imprime no console o erro
-        console.log(error);
     }
 }
 
 
+
+// export {routes};
 
 
