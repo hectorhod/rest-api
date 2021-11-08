@@ -1,6 +1,6 @@
 import { Handler } from "express-serve-static-core";
 import { MetadataKeys } from "../Controllers/Decorator/controller.decorator";
-import { Api, controllers } from "../Controllers/RestController";
+import { Api } from "../Controllers/RestController";
 import { CommonRoutes } from "./CommonRoutes/CommonRoutes";
 import { IRouter } from "./decorators/routes.decorator";
 import { METHOD } from "./utils/method.enum";
@@ -15,42 +15,51 @@ export class Routes {
     return this._routes;
   }
 
-  constructor(server: Api) {
+  constructor(server: Api, listRoutes: any[]) {
     this._server = server;
-    const info: Array<{ api: string; handler: string }> = [];
-    controllers.forEach((controllerClass) => {
-      const controllerInstance: CommonRoutes = new controllerClass(
-        this._server
-      );
-      const controllerMethods: { [handlerName: string]: Handler } =
-        controllerInstance as any;
-      const path = Reflect.getMetadata(MetadataKeys.BASE_PATH, controllerClass);
-      const routers: IRouter[] = Reflect.getMetadata(
-        MetadataKeys.ROUTERS,
-        controllerClass
-      );
-      const exRouter = controllerInstance.router;
+    if (listRoutes && listRoutes.length > 0) {
+      const info: Array<{ api: string, method: string, origem: string, handler: string }> = [];
+      listRoutes.forEach((controllerClass) => {
+        const controllerInstance: CommonRoutes = new controllerClass(
+          this._server
+        );
+        const controllerMethods: { [handlerName: string]: Handler } =
+          controllerInstance as any;
+        const path = Reflect.getMetadata(
+          MetadataKeys.BASE_PATH,
+          controllerClass
+        );
+        const routers: IRouter[] = Reflect.getMetadata(
+          MetadataKeys.ROUTERS,
+          controllerClass
+        );
+        const exRouter = controllerInstance.router;
 
-      if (routers) {
-        routers.forEach(({ method, path, handlerName, rootPath }) => {
-          if (!rootPath) {
-            exRouter[method as METHOD](
-              path,
-              controllerMethods[String(handlerName)].bind(controllerMethods)
-            );
-          } else {
-            this._server.app[method as METHOD](
-              path,
-              controllerMethods[String(handlerName)].bind(controllerMethods)
-            );
-          }
-        });
-      }
-      if (path) {
-        this._server.app.use(path, exRouter);
-      }
-      this._routes.push(controllerInstance);
-    });
+        if (routers) {
+          routers.forEach(({ method, path:routePath, handlerName, rootPath }) => {
+            if (!rootPath) {
+              exRouter[method as METHOD](
+                routePath,
+                controllerMethods[String(handlerName)].bind(controllerMethods)
+              );
+              info.push({api:controllerInstance.getName(), method:method, origem:"localhost:"+server.port, handler:path+routePath})
+            } else {
+              this._server.app[method as METHOD](
+                routePath,
+                controllerMethods[String(handlerName)].bind(controllerMethods)
+                
+              );
+              info.push({api:controllerInstance.getName()+`( root: ${server.serverName} )`, method:method, origem:"localhost:"+server.port, handler:routePath})
+            }
+          });
+        }
+        if (path) {
+          this._server.app.use(path, exRouter);
+        }
+        this._routes.push(controllerInstance);
+      });
+      console.table(info);
+    }
   }
 
   public getRoute(routeName: string) {

@@ -3,7 +3,9 @@ import MongoStore from "connect-mongo";
 import * as dotenv from "dotenv";
 import express, { Express } from "express";
 import session from "express-session";
+import { Server } from "http";
 import { MongoController } from "../MongoDB/MongoController";
+import { CommonRoutes } from "../Routes/CommonRoutes/CommonRoutes";
 import { Routes } from "../Routes/Routes";
 import { AlunoRestController } from "./AlunoRestController";
 import { DiretorRestController } from "./DiretorRestController";
@@ -17,7 +19,6 @@ dotenv.config({ path: "./banco.env" });
 const oneDay = 1000 * 60 * 60 * 24;
 
 // Define a porta de hospedagem
-const PORT = 3000;
 export const servers: Api[] = [];
 
 // Define o tipo de servidor
@@ -29,27 +30,29 @@ declare module "express-session" {
 
 export class Api {
   private _serverName: string;
+  private _server: Server;
   private static dbName = process.env.BD_CONN_NAME;
   private static mongo: MongoController = new MongoController();
   private static mongoClient = Api.mongo.getConnection();
   private readonly _app: Express;
+  public readonly port: number;
   private _routes: any;
 
-  constructor(serverName: string) {
+  constructor(serverName: string, port: number, routesList: any[]) {
     this._serverName = serverName;
     this._app = express();
-    Api.collectionsStart();
     this.configureMiddleware();
+    this.port = port;
 
     servers.push(this);
-    this._routes = new Routes(this);
+    this._routes = new Routes(this, routesList ?? []);
     // Define qual porta o sistema estará observando
-    this._app.listen(PORT, () => {
-      console.log("Servidor rodando na porta " + PORT);
+    this._server = this._app.listen(this.port, () => {
+      console.log("Servidor rodando na porta " + this.port);
     });
   }
 
-  private static collectionsStart() {
+  public static collectionsStart() {
     Api.mongo.ConnectCollection("Alunos");
     Api.mongo.ConnectCollection("Professors");
     Api.mongo.ConnectCollection("Diretors");
@@ -113,6 +116,10 @@ export class Api {
   }
   get serverName(): string {
     return this._serverName;
+  }
+
+  get server(): Server {
+    return this._server;
   }
 }
 
