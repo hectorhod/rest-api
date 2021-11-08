@@ -1,28 +1,28 @@
 import { ObjectId } from "bson";
 import { Livro } from "../Livro/Livro";
 
-export default class Materia{
-    _id:ObjectId;
-    nome:string;
-    professor: ObjectId;
-    private livros: Livro[] = [];
-    /*TODO:
+export default class Materia {
+  _id: ObjectId;
+  nome: string;
+  professor: ObjectId;
+  private livros: Livro[] = [];
+  /*TODO:
         Definir o limite da turma por matéria
         Definir o período da turma necessária
         Talvez colocar o 'census'
     ]*/
 
-    constructor(nome:string, professor:ObjectId, id?:ObjectId){
-        id? this._id = id : this._id = new ObjectId;
-        this.nome = nome;
-        this.professor = professor;
-    }
+  constructor(nome: string, professor: ObjectId, id?: ObjectId) {
+    id ? (this._id = id) : (this._id = new ObjectId());
+    this.nome = nome;
+    this.professor = professor;
+  }
 
-    public getLivros(): Livro[]{
-        return this.livros;
-    }
+  public getLivros(): Livro[] {
+    return this.livros;
+  }
 
-    /* Deixa por aqui, vou ver se é necessário dps, creio que não, mas né ...
+  /* Deixa por aqui, vou ver se é necessário dps, creio que não, mas né ...
     public addLivro(livro: Livro, idProfessor: ObjectId){
         if(idProfessor === this.professor){
             this.livros.push(livro);

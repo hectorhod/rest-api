@@ -1,5 +1,5 @@
-export enum TipoPessoa{
-    Aluno = "Aluno",
-    Diretor = "Diretor",
-    Professor = "Professor"
+export enum TipoPessoa {
+  Aluno = "Aluno",
+  Diretor = "Diretor",
+  Professor = "Professor",
 }
