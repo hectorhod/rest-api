@@ -1,8 +1,10 @@
 // Realiza a importação dos modulos necessários
 import { ObjectId } from "bson";
 import { Request, Response } from "express";
+import multer from "multer";
 import { Livro } from "../Models/Livro/Livro";
 import { getCollection } from "../MongoDB/MongoController";
+import { PdfInfo, saveArchive } from "../pdfhandler/pdfhandler";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
 import { controller } from "./Decorator/controller.decorator";
@@ -30,7 +32,32 @@ export class LibraryRestController extends LibraryRoutes {
           .toArray()) as Livro[];
 
         // Devolve uma mensagem para o remetente com os livros e um código de status
-        res.status(200).send(livros);
+        // res.status(200).send(livros);
+
+        // nome: string;
+        // autor: string;
+        // volume: number;
+        // ano: number;
+        // linkSistema: string;
+        res.status(200).send(`
+          <form method="post" enctype="multipart/form-data">
+            <input type = "file" id="pdf" name = "pdf", accept = ".pdf">
+            <div>
+              <label for="nome">Nome do Livro:. </laber><br>
+              <input type = "text" id="nome" name = "nome"><br>
+              <label for="nome">Autor do Livro:. </laber><br>
+              <input type = "text" id="autor" name = "autor"><br>
+              <label for="nome">Volume do Livro:. </laber><br>
+              <input type = "text" id="volume" name = "volume"><br>
+              <label for="nome">Ano do Livro:. </laber><br>
+              <input type = "text" id="ano" name = "ano"><br>
+            </div>
+            <div>
+              <button> submit </button>
+            </div>
+
+          </form>
+        `)
         console.log("Livros retornado com sucesso");
       } else {
         // Joga um novo erro caso não exista uma collection
@@ -78,16 +105,20 @@ export class LibraryRestController extends LibraryRoutes {
   }
 
   // Define um método para o request POST no /biblioteca
-  @routeConfig(METHOD.POST, "/")
+  @routeConfig(METHOD.POST, "/", multer().single("pdf"))
   protected async postLivro(req: Request, res: Response) {
+    console.log(req.file)
     try {
       // Cria um objeto Livro utilizando o json recebido no corpo do request
       const livro = req.body as Livro;
+      livro.linkSistema = "/"+livro.nome;
+      const arquivo = req.file as PdfInfo;
 
       // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
       const result = await getCollection("Livros")?.collection?.insertOne(
         livro
       );
+      saveArchive(livro.linkSistema, arquivo);
 
       // Exibe o resultado da operação anterior
       result

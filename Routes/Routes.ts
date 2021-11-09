@@ -36,19 +36,34 @@ export class Routes {
         const exRouter = controllerInstance.router;
 
         if (routers) {
-          routers.forEach(({ method, path:routePath, handlerName, rootPath }) => {
+          routers.forEach(({ method, path:routePath, handlerName, middleware, rootPath }) => {
             if (!rootPath) {
-              exRouter[method as METHOD](
-                routePath,
-                controllerMethods[String(handlerName)].bind(controllerMethods)
-              );
+              if(middleware){
+                exRouter[method as METHOD](
+                  routePath,
+                  middleware,
+                  controllerMethods[String(handlerName)].bind(controllerMethods)
+                );
+              }else{
+                exRouter[method as METHOD](
+                  routePath,
+                  controllerMethods[String(handlerName)].bind(controllerMethods)
+                );
+              }
               info.push({api:controllerInstance.getName(), method:method, origem:"localhost:"+server.port, handler:path+routePath})
             } else {
-              this._server.app[method as METHOD](
-                routePath,
-                controllerMethods[String(handlerName)].bind(controllerMethods)
-                
-              );
+              if(middleware){
+                this._server.app[method as METHOD](
+                  routePath,
+                  middleware,
+                  controllerMethods[String(handlerName)].bind(controllerMethods)
+                );
+              }else{
+                this._server.app[method as METHOD](
+                  routePath,
+                  controllerMethods[String(handlerName)].bind(controllerMethods)
+                );
+              }
               info.push({api:controllerInstance.getName()+`( root: ${server.serverName} )`, method:method, origem:"localhost:"+server.port, handler:routePath})
             }
           });

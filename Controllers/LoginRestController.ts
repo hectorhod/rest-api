@@ -27,7 +27,7 @@ export class LoginRestController extends LoginRoutes {
     }
   }
 
-  @routeConfig(METHOD.GET, "/logout", true)
+  @routeConfig(METHOD.GET, "/logout", undefined ,true)
   protected async getLogout(req: Request, res: Response) {
     req.session.destroy(() => {
       res.redirect("/login");
@@ -53,7 +53,7 @@ export class LoginRestController extends LoginRoutes {
           }
           if (user && (await CompareIt(password, user))) {
             req.session.userid = user.username;
-            console.log(`usuário ${login} logou como tipo ${user.tipoPessoa}`);
+            console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
             res.send(
               `Olá ${req.session.userid} <a href=\'/logout'>click to logout</a>`
             );
