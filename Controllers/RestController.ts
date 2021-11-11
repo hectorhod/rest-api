@@ -5,7 +5,6 @@ import express, { Express } from "express";
 import session from "express-session";
 import { Server } from "http";
 import { MongoController } from "../MongoDB/MongoController";
-import { CommonRoutes } from "../Routes/CommonRoutes/CommonRoutes";
 import { Routes } from "../Routes/Routes";
 import { AlunoRestController } from "./AlunoRestController";
 import { DiretorRestController } from "./DiretorRestController";
@@ -45,7 +44,7 @@ export class Api {
     this.port = port;
 
     servers.push(this);
-    this._routes = new Routes(this, routesList ?? []);
+    this._routes = new Routes(this, routesList ??[]);
     // Define qual porta o sistema estará observando
     this._server = this._app.listen(this.port, () => {
       console.log("Servidor rodando na porta " + this.port);

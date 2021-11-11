@@ -23,23 +23,7 @@ export class LibraryRestController extends LibraryRoutes {
   @routeConfig(METHOD.GET, "/")
   protected async index(req: Request, res: Response) {
     try {
-      // Obtem a COLLECTION necessária da lista de collection
-      const collection = getCollection("Livros");
-      if (collection) {
-        // Obtém todos os livros do MongoDB
-        const livros = (await collection?.collection
-          ?.find({})
-          .toArray()) as Livro[];
-
-        // Devolve uma mensagem para o remetente com os livros e um código de status
-        // res.status(200).send(livros);
-
-        // nome: string;
-        // autor: string;
-        // volume: number;
-        // ano: number;
-        // linkSistema: string;
-        res.status(200).send(`
+      res.status(200).send(`
           <form method="post" enctype="multipart/form-data">
             <input type = "file" id="pdf" name = "pdf", accept = ".pdf">
             <div>
@@ -57,12 +41,7 @@ export class LibraryRestController extends LibraryRoutes {
             </div>
 
           </form>
-        `)
-        console.log("Livros retornado com sucesso");
-      } else {
-        // Joga um novo erro caso não exista uma collection
-        throw new Error("Collections Users estava nulo!");
-      }
+        `);
     } catch (error: any) {
       // Imprime um erro no console
       console.log(error);
@@ -82,7 +61,7 @@ export class LibraryRestController extends LibraryRoutes {
         const livros = (await collection?.collection
           ?.find({})
           .toArray()) as Livro[];
-        res.status(200).send(livros)
+        res.status(200).send(livros);
         console.log("Livros retornado com sucesso");
       } else {
         // Joga um novo erro caso não exista uma collection
@@ -132,11 +111,11 @@ export class LibraryRestController extends LibraryRoutes {
   // Define um método para o request POST no /biblioteca
   @routeConfig(METHOD.POST, "/", multer().single("pdf"))
   protected async postLivro(req: Request, res: Response) {
-    console.log(req.file)
+    console.log(req.file);
     try {
       // Cria um objeto Livro utilizando o json recebido no corpo do request
       const livro = req.body as Livro;
-      livro.linkSistema = "/"+livro.nome;
+      livro.linkSistema = "/" + livro.nome;
       const arquivo = req.file as PdfInfo;
 
       // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
