@@ -21,7 +21,7 @@ export class LibraryRestController extends LibraryRoutes {
 
   // Define um método para o request GET no /biblioteca
   @routeConfig(METHOD.GET, "/")
-  protected async getLivros(req: Request, res: Response) {
+  protected async index(req: Request, res: Response) {
     try {
       // Obtem a COLLECTION necessária da lista de collection
       const collection = getCollection("Livros");
@@ -58,6 +58,31 @@ export class LibraryRestController extends LibraryRoutes {
 
           </form>
         `)
+        console.log("Livros retornado com sucesso");
+      } else {
+        // Joga um novo erro caso não exista uma collection
+        throw new Error("Collections Users estava nulo!");
+      }
+    } catch (error: any) {
+      // Imprime um erro no console
+      console.log(error);
+
+      // Devolve uma mensagem para o remetente com o erro e um código de status
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.GET, "/getLivros")
+  protected async get(req: Request, res: Response) {
+    try {
+      // Obtem a COLLECTION necessária da lista de collection
+      const collection = getCollection("Livros");
+      if (collection) {
+        // Obtém todos os livros do MongoDB
+        const livros = (await collection?.collection
+          ?.find({})
+          .toArray()) as Livro[];
+        res.status(200).send(livros)
         console.log("Livros retornado com sucesso");
       } else {
         // Joga um novo erro caso não exista uma collection
