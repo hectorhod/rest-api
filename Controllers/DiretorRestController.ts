@@ -1,9 +1,11 @@
 // Realiza a importação dos modulos necessários
 import { ObjectId } from "bson";
 import { Request, Response } from "express";
+import Materia from "../Models/Materia/Materia";
 import { Diretor } from "../Models/Pessoas/Diretor";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";
+import { Turma } from "../Models/Turma/Turma";
 import { getCollection } from "../MongoDB/MongoController";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
@@ -75,6 +77,48 @@ export class DiretorRestController extends DiretorRoutes {
       console.log(error);
 
       // Devolve uma mensagem para o remetente com o erro e um código de status
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.POST, "/postTurma")
+  public async postTurma(req: Request, res: Response) {
+    try {
+      const turma = req.body as Turma;
+      const result = await getCollection("Turmas")?.collection?.insertOne(turma);
+      result
+        ? (res
+            .status(200)
+            .send("Turma criada com sucesso com o id: " + result.insertedId),
+          console.log(
+            "Turma criada com sucesso com o id: " + result.insertedId
+          ))
+        : (res.status(500).send("Turma não foi criada com sucesso"),
+          console.log("Turma não foi criada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.POST, "/postMateria")
+  public async postMateria(req: Request, res: Response) {
+    try {
+      const materia = req.body as Materia;
+      materia.professor = new ObjectId(req.body.professor);
+      materia.turma = new ObjectId(req.body.turma);
+      const result = await getCollection("Materias")?.collection?.insertOne(materia);
+      result
+        ? (res
+            .status(200)
+            .send("Materia criada com sucesso com o id: " + result.insertedId),
+          console.log(
+            "Materia criada com sucesso com o id: " + result.insertedId
+          ))
+        : (res.status(500).send("Materia não foi criada com sucesso"),
+          console.log("Materia não foi criada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
       res.status(400).send(error.message);
     }
   }

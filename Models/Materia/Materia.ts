@@ -5,21 +5,36 @@ export default class Materia {
   _id: ObjectId;
   nome: string;
   professor: ObjectId;
-  private livros: Livro[] = [];
+  turma: ObjectId;
+  private livros: ObjectId[] = [];
+  private atividades: ObjectId[] = [];
   /*TODO:
         Definir o limite da turma por matéria
         Definir o período da turma necessária
         Talvez colocar o 'census'
     ]*/
 
-  constructor(nome: string, professor: ObjectId, id?: ObjectId) {
+  constructor(nome: string, professor: ObjectId, turma: string, id?: ObjectId) {
     id ? (this._id = id) : (this._id = new ObjectId());
     this.nome = nome;
     this.professor = professor;
+    this.turma = new ObjectId(turma);
   }
 
-  public getLivros(): Livro[] {
+  public getLivros(): ObjectId[] {
     return this.livros;
+  }
+
+  public addLivro(livro: string){
+      this.livros.push(new ObjectId(livro));
+  }
+
+  public getAtividades(): ObjectId[] {
+      return this.atividades;
+  }
+
+  public addAtividade(atividade: string): void {
+      this.atividades.push(new ObjectId(atividade));
   }
 
   /* Deixa por aqui, vou ver se é necessário dps, creio que não, mas né ...

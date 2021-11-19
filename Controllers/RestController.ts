@@ -57,6 +57,9 @@ export class Api {
     Api.mongo.ConnectCollection("Diretors");
     Api.mongo.ConnectCollection("Livros");
     Api.mongo.ConnectCollection("Users");
+    Api.mongo.ConnectCollection("Turmas");
+    Api.mongo.ConnectCollection("Materias");
+    Api.mongo.ConnectCollection("Atividades");
   }
 
   public configureMiddleware() {

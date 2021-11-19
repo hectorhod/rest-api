@@ -1,6 +1,7 @@
 // Realiza a importação dos modulos necessários
-import { ObjectId } from "bson";
+import { ObjectID, ObjectId } from "bson";
 import { Request, Response } from "express";
+import { Atividade } from "../Models/Atividade/Atividade";
 import { Professor } from "../Models/Pessoas/Professor";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";
@@ -110,6 +111,24 @@ export class ProfessorRestController extends ProfessorRoutes {
       console.log(error);
 
       // Devolve uma mensagem para o remetente com o erro e um código de status
+      res.status(400).send(error.message);
+    }
+  }
+  @routeConfig(METHOD.POST, "/postAtividade")
+  protected async postAtividade(req: Request, res:Response) {
+    try {
+      const atividade = req.body as Atividade
+      atividade.materia = new ObjectID(req.body.materia);
+      const result = await getCollection("Atividades")?.collection?.insertOne(atividade);
+      result
+          ? (res
+              .status(200)
+              .send("Atividade criada com sucesso com o id " + result.insertedId),
+            console.log("Atividade criada com sucesso com o id " + result.insertedId))
+          : (res.status(500).send("Atividade não foi criada com sucesso"),
+            console.log("Atividade não foi criada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
       res.status(400).send(error.message);
     }
   }

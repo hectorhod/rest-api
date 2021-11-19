@@ -4,8 +4,8 @@ import { Aluno } from "../Pessoas/Aluno";
 
 export class Turma {
   _id: ObjectId;
-  protected materias: Materia[] = [];
-  protected alunos: Aluno[] = [];
+  protected materias: ObjectId[] = [];
+  protected alunos: ObjectId[] = [];
   periodo: number;
   dataInicio: Date;
 
@@ -30,5 +30,13 @@ export class Turma {
 
   public getAlunos() {
     return this.alunos;
+  }
+  
+  public addMateria(materia: string){
+    this.materias.push(new ObjectId(materia));
+  }
+
+  public addAluno(aluno: string){
+    this.alunos.push(new ObjectId(aluno));
   }
 }
