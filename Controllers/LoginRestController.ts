@@ -55,7 +55,7 @@ export class LoginRestController extends LoginRoutes {
             req.session.userid = user.username;
             console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
             res.send(
-              `Olá ${req.session.userid} <a href=\'/logout'>click to logout</a>`
+              user.tipoPessoa
             );
 
             // res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);

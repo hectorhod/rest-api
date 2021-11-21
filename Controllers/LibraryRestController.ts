@@ -10,6 +10,7 @@ import { METHOD } from "../Routes/utils/method.enum";
 import { controller } from "./Decorator/controller.decorator";
 import { Api } from "./RestController";
 import { LibraryRoutes } from "./Routes/LibraryRoutes";
+import * as fs from "fs";
 
 // Define a classe LibraryRestController, a qual controla os requests recebidos no /biblioteca
 @controller("/biblioteca")
@@ -154,6 +155,10 @@ export class LibraryRestController extends LibraryRoutes {
         // Cria um objeto Livro utilizando o json recebido no corpo do request
         const biblioteca = req.body as Livro;
 
+        // Renomeia o arquivo undefined e define o linkSistema para o mesmo nome que o usuário criou para o livro
+        biblioteca.linkSistema = "/" + biblioteca.nome;
+        fs.renameSync('./Livros/undefined.pdf', './Livros/' + biblioteca.nome + '.pdf');
+        
         // Cria uma query de pesquisa com o id recebido
         const query = { _id: new ObjectId(id) };
 

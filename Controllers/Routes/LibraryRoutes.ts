@@ -24,7 +24,7 @@ export class LibraryRoutes extends CommonRoutes {
         const result = (await getCollection("Livros")?.collection?.findOne(
           query
         )) as Livro;
-        return getArchive(result.linkSistema);
+        return getArchive(result.linkSistema + ".pdf");
       } else {
         throw new Error("O id(livro) não foi recebido com sucesso.");
       }
