@@ -129,14 +129,30 @@ export class AlunoRestController extends AlunoRoutes {
   @routeConfig(METHOD.POST, "/user")
   protected async postUser(req: Request, res: Response) {
     try {
+      const alunoCollection = getCollection("Alunos")
       var route = this.server.routes.getRoute("userRest") as UserRestController;
       if (req.body && route) {
+
+        await route.validateEmail(req.body.email) ?? false;
+        await route.validateUsername(req.body.username) ?? false;
+
+        var aluno: Aluno = new Aluno(
+          req.body.username,
+          req.body.idade,
+          req.body.cpf,
+        );
+
+        let resultAluno = alunoCollection?.collection?.insertOne(aluno)
+        if(!resultAluno){
+          throw new Error("Ocorreu um erro ao criar o aluno")
+        }
+
         var result: User = await route.createUser(
           req.body.username,
           req.body.password,
           req.body.email,
-          req.body.pessoa,
-          TipoPessoa.Professor,
+          aluno._id,
+          TipoPessoa.Aluno,
           false
         );
 

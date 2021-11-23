@@ -197,11 +197,27 @@ export class DiretorRestController extends DiretorRoutes {
     try {
       var route = this.server.routes.getRoute("userRest") as UserRestController;
       if (req.body && route) {
+        let diretorCollection = getCollection("Diretors")
+
+        await route.validateEmail(req.body.email) ?? false;
+        await route.validateUsername(req.body.username) ?? false;
+
+        var diretor: Diretor = new Diretor(
+          req.body.username,
+          req.body.idade,
+          req.body.cpf,
+        );
+
+        let resultProfessor = diretorCollection?.collection?.insertOne(diretor)
+        if(!resultProfessor){
+          throw new Error("Ocorreu um erro ao criar o diretor")
+        }
+
         var result: User = await route.createUser(
           req.body.username,
           req.body.password,
           req.body.email,
-          req.body.pessoa,
+          diretor._id,
           TipoPessoa.Diretor,
           false
         );

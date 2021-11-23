@@ -86,11 +86,27 @@ export class ProfessorRestController extends ProfessorRoutes {
     try {
       var route = this.server.routes.getRoute("userRest") as UserRestController;
       if (req.body && route) {
+        let professorCollection = getCollection("Professors")
+
+        await route.validateEmail(req.body.email) ?? false;
+        await route.validateUsername(req.body.username) ?? false;
+
+        var professor: Professor = new Professor(
+          req.body.username,
+          req.body.idade,
+          req.body.cpf,
+        );
+
+        let resultProfessor = professorCollection?.collection?.insertOne(professor)
+        if(!resultProfessor){
+          throw new Error("Ocorreu um erro ao criar o professor")
+        }
+
         var result: User = await route.createUser(
           req.body.username,
           req.body.password,
           req.body.email,
-          req.body.pessoa,
+          professor._id,
           TipoPessoa.Professor,
           false
         );

@@ -124,7 +124,7 @@ export class UserRestController extends UserRoutes {
   }
 
   // Define um método para o request POST no /user
-  @routeConfig(METHOD.POST, "/")
+  // @routeConfig(METHOD.POST, "/")
   protected async post(req: Request, res: Response) {
     try {
       if (req.body) {

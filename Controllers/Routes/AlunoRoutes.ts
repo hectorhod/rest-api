@@ -37,7 +37,6 @@ export class AlunoRoutes extends CommonRoutes {
       undefined,
       undefined,
       undefined,
-      undefined,
       id
     );
     return result;
@@ -56,7 +55,6 @@ export class AlunoRoutes extends CommonRoutes {
     Nome?: string,
     Idade?: number,
     CPF?: number,
-    Matricula?: number,
     id?: string
   ): Promise<Aluno> {
     try {
@@ -71,11 +69,8 @@ export class AlunoRoutes extends CommonRoutes {
       if (CPF) {
         query.CPF = CPF;
       }
-      if (Matricula) {
-        query.Matricula = Matricula;
-      }
       if (id) {
-        query.id = new ObjectId(id);
+        query._id = new ObjectId(id);
       }
 
 

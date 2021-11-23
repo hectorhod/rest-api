@@ -76,6 +76,26 @@ export abstract class UserRoutes extends CommonRoutes {
     return result;
   }
 
+  public async validateUsername(username:string):Promise<boolean>{
+    var listUsername = await this.getListUsername();
+    if (listUsername.includes(username)) {
+      throw new Error("O username já existe no sistema!!");
+    }
+    return true;
+
+  }
+
+  public async validateEmail(email: string):Promise<boolean>{
+    var listEmail = await this.getListEmail();
+    if(!validateEmail(email)){
+      throw new Error("O email inserido é invalido!!");
+    }
+    if (listEmail.includes(email)) {
+      throw new Error("O email já existe no sistema!!");
+    }
+    return true;
+  }
+
   public async createUser(
     username: string,
     password: string,
@@ -85,17 +105,6 @@ export abstract class UserRoutes extends CommonRoutes {
     active: boolean
   ): Promise<User> {
     try {
-      var listUsername = await this.getListUsername();
-      var listEmail = await this.getListEmail();
-
-      if (!validateEmail(email)) {
-        throw new Error("O email inserido é inválido!!");
-      }
-      if (listUsername.includes(username)) {
-        throw new Error("O username já existe no sistema!!");
-      } else if (listEmail.includes(email)) {
-        throw new Error("O email já existe no sistema!!");
-      }
 
       // Cria um objeto User utilizando o json recebido no corpo do request
       const user = new User(
