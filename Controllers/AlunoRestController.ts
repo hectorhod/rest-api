@@ -1,9 +1,11 @@
 // Realiza a importação dos modulos necessários
 import { ObjectId } from "bson";
 import { Request, Response } from "express";
+import Materia from "../Models/Materia/Materia";
 import { Aluno } from "../Models/Pessoas/Aluno";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";
+import { Turma } from "../Models/Turma/Turma";
 import { getCollection } from "../MongoDB/MongoController";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
@@ -44,6 +46,50 @@ export class AlunoRestController extends AlunoRoutes {
       console.log(error);
 
       // Devolve uma mensagem para o remetente com o erro e um código de status
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.GET, "/getMaterias")
+  public async postMateria(req: Request, res: Response) {
+    try {
+      const collection = getCollection("Turmas");
+      const materiaCollection = getCollection("Materias");
+
+      const userRoutes = this.server.routes.getRoute('userRest') as UserRestController;
+      const user = await userRoutes.getUserByUsername(req.session.userid)
+      
+      let turma: Turma | undefined;
+
+      const turmas = (await collection?.collection?.find({}).toArray()) as Turma[];
+
+      turmas.forEach( function(item){
+        let alunos = item.alunos?? item.alunos;
+        if(alunos && !turma){
+          alunos.forEach(function(alu) {
+            if(alu.equals(user.pessoa)){
+              turma = item;
+            }
+          })
+        }
+      })
+
+      const materiasAluno = turma?.materias;
+      const result: Materia[] = (await materiaCollection?.collection?.find({_id: { $in: materiasAluno}}).toArray()) as Materia[]
+      // materiasAluno?.forEach(function(materia){
+      //   result.push()
+      // })
+      result
+        ? (res
+            .status(200)
+            .send(result),
+          console.log(
+            result
+          ))
+        : (res.status(500).send("Materia não foi criada com sucesso"),
+          console.log("Materia não foi criada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
       res.status(400).send(error.message);
     }
   }
@@ -126,7 +172,7 @@ export class AlunoRestController extends AlunoRoutes {
         const aluno = req.body as Aluno;
 
         // Cria uma query de pesquisa com o id recebido
-        const query = { _id: new ObjectId(id) };
+        const query = { _id: id };
 
         // Obtem a COLLECTION necessária da lista de collection e tenta atualizar o objeto
         const result = await getCollection("Alunos")?.collection?.updateOne(
@@ -163,7 +209,7 @@ export class AlunoRestController extends AlunoRoutes {
         const id = req.params.id;
 
         // Cria uma query de pesquisa com o id recebido
-        const query = { _id: new ObjectId(id) };
+        const query = { _id: id };
 
         // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
         const result = await getCollection("Alunos")?.collection?.deleteOne(

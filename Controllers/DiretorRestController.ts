@@ -1,5 +1,6 @@
 // Realiza a importação dos modulos necessários
-import { ObjectId } from "bson";
+// import { ObjectId } from "bson";
+import { ObjectId } from "mongodb";
 import { Request, Response } from "express";
 import Materia from "../Models/Materia/Materia";
 import { Diretor } from "../Models/Pessoas/Diretor";
@@ -101,12 +102,75 @@ export class DiretorRestController extends DiretorRoutes {
     }
   }
 
+  @routeConfig(METHOD.PUT, "/putMateriaTurma/:idTurma")
+  public async putMateriaTurma(req: Request, res: Response) {
+    try {
+      const turmaCollection = getCollection("Turmas");
+
+      const idTurma = req.params.idTurma as string;
+      const idMateria = new ObjectId(req.body.alunoID)
+
+
+      const turma = (await turmaCollection?.collection?.findOne({_id: idTurma})) as Turma;
+      let tmpTurma: ObjectId[] = turma.materias ?? [];
+      tmpTurma.push(idMateria);
+      turma.materias = tmpTurma;
+
+      let result = turmaCollection?.collection?.updateOne({_id: idTurma}, { $set: turma})
+      
+      result
+        ? (res
+            .status(200)
+            .send("turma atualizada com sucesso com o id: " + idTurma.toString()),
+          console.log(
+            "turma atualizada com sucesso com o id: " + idTurma.toString()
+          ))
+        : (res.status(500).send("turma não foi atualizada com sucesso"),
+          console.log("turma não foi atualizada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.PUT, "/putAlunoTurma/:idTurma")
+  public async putAlunoTurma(req: Request, res: Response) {
+    try {
+      const turmaCollection = getCollection("Turmas");
+
+      const idTurma = new ObjectId(req.params.idTurma);
+      const idAluno = new ObjectId(req.body.alunoID)
+      // console.log(idAluno.toString())
+
+      const turma = (await turmaCollection?.collection?.findOne({_id: idTurma})) as Turma;
+      let tmpAlunos: ObjectId[] = turma.alunos ?? [];
+      tmpAlunos.push(idAluno);
+
+      turma.alunos = tmpAlunos;
+
+      let result = turmaCollection?.collection?.updateOne({_id: idTurma}, { $set: turma})
+      
+      result
+        ? (res
+            .status(200)
+            .send("turma atualizada com sucesso com o id: " + idTurma.toString()),
+          console.log(
+            "turma atualizada com sucesso com o id: " + idTurma.toString()
+          ))
+        : (res.status(500).send("turma não foi atualizada com sucesso"),
+          console.log("turma não foi atualizada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
   @routeConfig(METHOD.POST, "/postMateria")
   public async postMateria(req: Request, res: Response) {
     try {
       const materia = req.body as Materia;
-      materia.professor = new ObjectId(req.body.professor);
-      materia.turma = new ObjectId(req.body.turma);
+      materia.professor = req.body.professor;
+      materia.turma = req.body.turma;
       const result = await getCollection("Materias")?.collection?.insertOne(materia);
       result
         ? (res
@@ -122,6 +186,10 @@ export class DiretorRestController extends DiretorRoutes {
       res.status(400).send(error.message);
     }
   }
+
+  
+
+  
 
   // Define um método para o request POST no /user
   @routeConfig(METHOD.POST, "/user")
@@ -170,7 +238,7 @@ export class DiretorRestController extends DiretorRoutes {
         const professor = req.body as Diretor;
 
         // Cria uma query de pesquisa com o id recebido
-        const query = { _id: new ObjectId(id) };
+        const query = { _id: id };
 
         // Obtem a COLLECTION necessária da lista de collection e tenta atualizar o objeto
         const result = await getCollection("Diretors")?.collection?.updateOne(
@@ -207,7 +275,7 @@ export class DiretorRestController extends DiretorRoutes {
         const id = req.params.id;
 
         // Cria uma query de pesquisa com o id recebido
-        const query = { _id: new ObjectId(id) };
+        const query = { _id: id };
 
         // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
         const result = await getCollection("Diretors")?.collection?.deleteOne(

@@ -1,11 +1,14 @@
 import { ObjectId } from "bson";
+import { objectIDArray } from "../Decorators/variable";
 import Materia from "../Materia/Materia";
 import { Aluno } from "../Pessoas/Aluno";
 
 export class Turma {
   _id: ObjectId;
-  protected materias: ObjectId[] = [];
-  protected alunos: ObjectId[] = [];
+  @objectIDArray()
+  materias: ObjectId[] = [];
+  @objectIDArray()
+  alunos: ObjectId[] = [];
   periodo: number;
   dataInicio: Date;
 
@@ -24,19 +27,19 @@ export class Turma {
     return this._id;
   }
 
-  public getMaterias() {
-    return this.materias;
-  }
+  // public getMaterias() {
+  //   return this.materias;
+  // }
 
-  public getAlunos() {
-    return this.alunos;
-  }
+  // public getAlunos() {
+  //   return this.alunos;
+  // }
   
-  public addMateria(materia: string){
-    this.materias.push(new ObjectId(materia));
-  }
+  // public addMateria(materia: string){
+  //   this.materias.push(materia));
+  // }
 
-  public addAluno(aluno: string){
-    this.alunos.push(new ObjectId(aluno));
-  }
+//   public addAluno(aluno: string){
+//     this.alunos.push(aluno));
+//   }
 }

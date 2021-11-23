@@ -129,12 +129,12 @@ export class UserRestController extends UserRoutes {
     try {
       if (req.body) {
         var result: User = await this.createUser(
-          req.body.username,
-          req.body.password,
-          req.body.email,
-          req.body.pessoa,
-          req.body.tipoPessoa,
-          req.body.active
+          req.body.username as string,
+          req.body.password as string,
+          req.body.email as string,
+          req.body.pessoa as ObjectId,
+          req.body.tipoPessoa as TipoPessoa,
+          req.body.active as boolean
         );
 
         // Exibe o resultado da operação anterior

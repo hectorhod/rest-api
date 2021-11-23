@@ -1,5 +1,6 @@
 // Realiza a importação dos modulos necessários
 import { Request, Response } from "express";
+import { sign, verify } from "jsonwebtoken";
 import { CompareIt, User } from "../Models/Pessoas/User";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
@@ -30,7 +31,7 @@ export class LoginRestController extends LoginRoutes {
   @routeConfig(METHOD.GET, "/logout", undefined ,true)
   protected async getLogout(req: Request, res: Response) {
     req.session.destroy(() => {
-      res.redirect("/login");
+      res.json({ auth: false, token: null})//.redirect("/login");
     });
   }
 
@@ -42,8 +43,8 @@ export class LoginRestController extends LoginRoutes {
         const route: UserRestController = this.server.routes.getRoute(
           "userRest"
         ) as UserRestController;
-        const login: string = req.body.login;
-        const password: string = req.body.password;
+        const login: string = req.body.login as string;
+        const password: string = req.body.password as string;
         var user: User | undefined = undefined;
         if (route && login && password) {
           if (validateEmail(login)) {
@@ -53,10 +54,16 @@ export class LoginRestController extends LoginRoutes {
           }
           if (user && (await CompareIt(password, user))) {
             req.session.userid = user.username;
+            const id = user._id;
             console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
-            res.send(
-              user.tipoPessoa
-            );
+            const token = sign({ id }, 'UmaSenhaMuiToSegura1234', {
+              expiresIn: 60*5 //5min
+            })
+            // res.send(
+            //   user.tipoPessoa
+            // );
+
+            res.json({auth: true, token: token})
 
             // res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
           } else {
@@ -82,4 +89,20 @@ export class LoginRestController extends LoginRoutes {
 export function validateEmail(email: string): boolean {
   const er: RegExp = /^\w*(\.\w*)?@\w*\.[a-z]+(\.[a-z]+)?$/;
   return er.test(email);
+}
+
+export function verifyJWT(req: Request){
+  const token: string = req.headers['x-acess-token'] as string;
+  if( !token ){
+    return false;
+  }else{
+    return verify(token, 'UmaSenhaMuiToSegura1234', function (err, decoded: any){
+      if (err){
+        return false;
+      }
+
+      console.log(decoded.id);
+      return true;
+    })
+  }
 }

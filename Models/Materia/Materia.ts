@@ -1,4 +1,5 @@
 import { ObjectId } from "bson";
+import { objectIDArray } from "../Decorators/variable";
 import { Livro } from "../Livro/Livro";
 
 export default class Materia {
@@ -6,7 +7,9 @@ export default class Materia {
   nome: string;
   professor: ObjectId;
   turma: ObjectId;
+  @objectIDArray()
   private livros: ObjectId[] = [];
+  @objectIDArray()
   private atividades: ObjectId[] = [];
   /*TODO:
         Definir o limite da turma por matéria
@@ -14,28 +17,29 @@ export default class Materia {
         Talvez colocar o 'census'
     ]*/
 
-  constructor(nome: string, professor: ObjectId, turma: string, id?: ObjectId) {
+  constructor(nome: string, professor: ObjectId, turma: ObjectId, id?: ObjectId) {
     id ? (this._id = id) : (this._id = new ObjectId());
     this.nome = nome;
     this.professor = professor;
-    this.turma = new ObjectId(turma);
+    this.turma = turma;
   }
 
+  
   public getLivros(): ObjectId[] {
     return this.livros;
   }
 
-  public addLivro(livro: string){
-      this.livros.push(new ObjectId(livro));
+  public addLivro(livro: ObjectId){
+      this.livros.push(livro);
   }
 
   public getAtividades(): ObjectId[] {
       return this.atividades;
   }
 
-  public addAtividade(atividade: string): void {
-      this.atividades.push(new ObjectId(atividade));
-  }
+//   public addAtividade(atividade: string): void {
+//       this.atividades.push(atividade));
+//   }
 
   /* Deixa por aqui, vou ver se é necessário dps, creio que não, mas né ...
     public addLivro(livro: Livro, idProfessor: ObjectId){
