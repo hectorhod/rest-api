@@ -189,39 +189,4 @@ export class ProfessorRestController extends ProfessorRoutes {
     }
   }
 
-  // Define um método para o request DELETE no /professor
-  @routeConfig(METHOD.PUT, "/delete/:id")
-  protected async delete(req: Request, res: Response) {
-    try {
-      if (req.params.id) {
-        //Obtem um id da url
-        const id = req.params.id;
-
-        // Cria uma query de pesquisa com o id recebido
-        const query = { _id: new ObjectId(id) };
-
-        // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
-        const result = await getCollection("Professors")?.collection?.deleteOne(
-          query
-        );
-
-        // Exibe o resultado da operação anterior
-        result
-          ? (res
-              .status(200)
-              .send("Professor removido com sucesso com o id " + id),
-            console.log("Professor removido com sucesso com o id " + id))
-          : (res.status(500).send("Professor não foi removido."),
-            console.log("Professor não foi removido."));
-      } else {
-        throw new Error("A requisição não pode ser concluida pela falta do ID");
-      }
-    } catch (error: any) {
-      // Imprime um erro no console
-      console.log(error);
-
-      // Devolve uma mensagem para o remetente com o erro e um código de status
-      res.status(400).send(error.message);
-    }
-  }
 }

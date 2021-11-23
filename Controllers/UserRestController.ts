@@ -4,9 +4,13 @@ import { Request, Response } from "express";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";
 import { getCollection } from "../MongoDB/MongoController";
+import { CommonRoutes } from "../Routes/CommonRoutes/CommonRoutes";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
+import { AlunoRestController } from "./AlunoRestController";
 import { controller } from "./Decorator/controller.decorator";
+import { DiretorRestController } from "./DiretorRestController";
+import { ProfessorRestController } from "./ProfessorRestController";
 import { Api } from "./RestController";
 import { UserRoutes } from "./Routes/UserRoutes";
 
@@ -200,15 +204,34 @@ export class UserRestController extends UserRoutes {
   protected async delete(req: Request, res: Response) {
     try {
       if (req.params.id) {
+        const collection = getCollection("Users");
         //Obtem um id da url
         const id = req.params.id;
-
-        // Cria uma query de pesquisa com o id recebido
         const query = { _id: new ObjectId(id) };
 
+        const user = await collection?.collection?.findOne(query) as User;
+        var router:CommonRoutes | undefined;
+        if(user.tipoPessoa === TipoPessoa.Aluno){
+          router = this.server.routes.getRoute('alunoRest') as AlunoRestController;
+        }else if(user.tipoPessoa === TipoPessoa.Professor){
+          router = this.server.routes.getRoute('professorRest') as ProfessorRestController;
+        }else if(user.tipoPessoa === TipoPessoa.Diretor){
+          router = this.server.routes.getRoute('diretorRest') as DiretorRestController;
+        }
+
+        if(router){
+          router.deletePessoa(user.pessoa)
+        }else{
+          throw new Error("Ouve um erro ao remover a pessoa do sistema");
+          
+        }
+
+
+        // Cria uma query de pesquisa com o id recebido
+
         // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
-        const result = await getCollection("Users")?.collection?.deleteOne(
-          query
+        const result = await collection?.collection?.deleteOne(
+          user
         );
 
         // Exibe o resultado da operação anterior

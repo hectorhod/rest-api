@@ -51,6 +51,33 @@ export class DiretorRestController extends DiretorRoutes {
     }
   }
 
+  @routeConfig(METHOD.GET, "/getMaterias")
+  public async getMaterias(req:Request, res:Response){
+    try {
+      // Obtem a COLLECTION necessária da lista de collection
+      const collection = getCollection("Materias");
+      if (collection) {
+        // Obtém todos as materias do MongoDB
+        const materias = (await collection?.collection
+          ?.find({})
+          .toArray()) as Materia[];
+
+        // Devolve uma mensagem para o remetente com as materias e um código de status
+        res.status(200).send(materias);
+        console.log("Materias retornado com sucesso");
+      } else {
+        // Joga um novo erro caso não exista uma collection
+        throw new Error("Collections Materias estava nulo!");
+      }
+    } catch (error: any) {
+      // Imprime um erro no console
+      console.log(error);
+
+      // Devolve uma mensagem para o remetente com o erro e um código de status
+      res.status(400).send(error.message);
+    }
+  }
+
   // Define um método para o request POST no /professor
   @routeConfig(METHOD.POST, "/")
   public async post(req: Request, res: Response) {
@@ -185,11 +212,7 @@ export class DiretorRestController extends DiretorRoutes {
       console.log(error);
       res.status(400).send(error.message);
     }
-  }
-
-  
-
-  
+  } 
 
   // Define um método para o request POST no /user
   @routeConfig(METHOD.POST, "/user")
@@ -282,39 +305,4 @@ export class DiretorRestController extends DiretorRoutes {
     }
   }
 
-  // Define um método para o request DELETE no /professor
-  @routeConfig(METHOD.DELETE, "/delete/:id")
-  public async delete(req: Request, res: Response) {
-    try {
-      if (req.params.id) {
-        //Obtem um id da url
-        const id = req.params.id;
-
-        // Cria uma query de pesquisa com o id recebido
-        const query = { _id: id };
-
-        // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
-        const result = await getCollection("Diretors")?.collection?.deleteOne(
-          query
-        );
-
-        // Exibe o resultado da operação anterior
-        result
-          ? (res
-              .status(200)
-              .send("Diretor removido com sucesso com o id " + id),
-            console.log("Diretor removido com sucesso com o id " + id))
-          : (res.status(500).send("Diretor não foi removido."),
-            console.log("Diretor não foi removido."));
-      } else {
-        throw new Error("A requisição não pode ser concluida pela falta do ID");
-      }
-    } catch (error: any) {
-      // Imprime um erro no console
-      console.log(error);
-
-      // Devolve uma mensagem para o remetente com o erro e um código de status
-      res.status(400).send(error.message);
-    }
-  }
 }

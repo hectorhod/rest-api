@@ -1,4 +1,5 @@
 // Realiza a importação dos modulos necessários
+import { ObjectId } from "bson";
 import { Request, Response, Router } from "express";
 import { Api } from "../../Controllers/RestController";
 
@@ -33,6 +34,8 @@ export abstract class CommonRoutes {
   protected delete(req: Request, res: Response) {
     throw new Error("O Método não foi implementado!!");
   }
+
+  public abstract deletePessoa(id:ObjectId):void;
 
   // Getters e Setters
   public getName(): string {

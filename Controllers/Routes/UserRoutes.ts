@@ -201,4 +201,8 @@ export abstract class UserRoutes extends CommonRoutes {
       throw new Error(`Ocorreu um erro ao obter o objeto: ${error}`);
     }
   }
+  public deletePessoa(id: ObjectId){
+    throw new Error("Esse método não deve utilizar essa função!!");
+    
+  }
 }

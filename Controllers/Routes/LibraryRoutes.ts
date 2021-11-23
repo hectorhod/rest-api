@@ -32,4 +32,9 @@ export class LibraryRoutes extends CommonRoutes {
       throw new Error(`Ocorre um erro na obtenção do pdf ${error}`);
     }
   }
+
+  public deletePessoa(id: ObjectId){
+    throw new Error("Esse método não deve utilizar essa função!!");
+    
+  }
 }
