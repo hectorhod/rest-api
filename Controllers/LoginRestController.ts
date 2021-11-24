@@ -59,11 +59,11 @@ export class LoginRestController extends LoginRoutes {
             const token = sign({ id }, 'UmaSenhaMuiToSegura1234', {
               expiresIn: 60*5 //5min
             })
-            // res.send(
-            //   user.tipoPessoa
-            // );
+            res.send(
+              user.tipoPessoa
+            );
 
-            res.json({auth: true, token: token})
+            // res.json({auth: true, token: token})
 
             // res.status(200).send(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
           } else {
