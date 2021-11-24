@@ -14,6 +14,7 @@ import { controller } from "./Decorator/controller.decorator";
 import { Api } from "./RestController";
 import { DiretorRoutes } from "./Routes/DiretorRoutes";
 import { UserRestController } from "./UserRestController";
+import { Livro } from "../Models/Livro/Livro";
 
 // Define a classe ProfessorRestController, a qual controla os requests recebidos no /diretor
 @controller("/diretor")
@@ -123,6 +124,66 @@ export class DiretorRestController extends DiretorRoutes {
           ))
         : (res.status(500).send("Turma não foi criada com sucesso"),
           console.log("Turma não foi criada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.GET, "/getLivrosMateria/:idMateria")
+  public async getLivrosMateria(req: Request, res: Response){
+    try {
+      const materiaCollection = getCollection("Materias");
+      const livroCollection = getCollection("Livros");
+
+      const idMateria = new ObjectId(req.params.idMateria);
+
+
+      const materia = (await materiaCollection?.collection?.findOne({_id: idMateria})) as Materia;
+      const livrosMateria: ObjectId[] = materia.livros;
+      console.log(livrosMateria)
+      const livros = (await livroCollection?.collection?.find({_id: {$in: livrosMateria}}).toArray()) as Livro[]
+      
+      
+      livros
+        ? (res
+            .status(200)
+            .send(livros),
+          console.log(
+            livros
+          ))
+        : (res.status(500).send("Materia não foi encontrada"),
+          console.log("Materia não foi encontrada"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.PUT, "/putLivroMateria/:idMateria")
+  public async putLivroMateria(req: Request, res: Response){
+    try {
+      const turmaCollection = getCollection("Materias");
+
+      const idMateria = new ObjectId(req.params.idMateria);
+      const idLivro = new ObjectId(req.body.livroID)
+      
+      const materia = (await turmaCollection?.collection?.findOne({_id: idMateria})) as Materia;
+      let tmpLivros = materia.livros ?? [];
+      tmpLivros.push(idLivro);
+      materia.livros = tmpLivros;      
+
+      let result = turmaCollection?.collection?.updateOne({_id: idMateria}, { $set: materia})
+      
+      result
+        ? (res
+            .status(200)
+            .send("Materia atualizada com sucesso com o id: " + idMateria.toString()),
+          console.log(
+            "Materia atualizada com sucesso com o id: " + idMateria.toString()
+          ))
+        : (res.status(500).send("Materia não foi atualizada com sucesso"),
+          console.log("Materia não foi atualizada com sucesso"));
     } catch (error: any) {
       console.log(error);
       res.status(400).send(error.message);

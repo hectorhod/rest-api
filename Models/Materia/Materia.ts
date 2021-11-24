@@ -8,9 +8,9 @@ export default class Materia {
   professor: ObjectId;
   turma: ObjectId;
   @objectIDArray()
-  private livros: ObjectId[] = [];
+  livros: ObjectId[] = [];
   @objectIDArray()
-  private atividades: ObjectId[] = [];
+  atividades: ObjectId[] = [];
   /*TODO:
         Definir o limite da turma por matéria
         Definir o período da turma necessária
@@ -24,48 +24,4 @@ export default class Materia {
     this.turma = turma;
   }
 
-  
-  public getLivros(): ObjectId[] {
-    return this.livros;
-  }
-
-  public addLivro(livro: ObjectId){
-      this.livros.push(livro);
-  }
-
-  public getAtividades(): ObjectId[] {
-      return this.atividades;
-  }
-
-//   public addAtividade(atividade: string): void {
-//       this.atividades.push(atividade));
-//   }
-
-  /* Deixa por aqui, vou ver se é necessário dps, creio que não, mas né ...
-    public addLivro(livro: Livro, idProfessor: ObjectId){
-        if(idProfessor === this.professor){
-            this.livros.push(livro);
-            console.log("Livro %s adicionado com sucesso", livro.nome)
-        }else{
-            console.log("O id ( %s ) não é responsável pela matéria.",idProfessor.toString)
-        }
-    }
-
-    public alteraLivro(livro: Livro, idProfessor: ObjectId){
-        if(idProfessor === this.professor){
-            this.livros.push(livro);
-            console.log("Livro %s alterado com sucesso", livro.nome)
-        }else{
-            console.log("O id ( %s ) não é responsável pela matéria.",idProfessor.toString)
-        }
-    }
-
-    public removeLivro(livro: Livro, idProfessor: ObjectId){
-        if(idProfessor === this.professor){
-            this.livros.push(livro);
-            console.log("Livro %s removido com sucesso", livro.nome)
-        }else{
-            console.log("O id ( %s ) não é responsável pela matéria.",idProfessor.toString)
-        }
-    }*/
 }
