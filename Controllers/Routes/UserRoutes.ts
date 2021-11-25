@@ -4,7 +4,7 @@ import { TipoPessoa } from "../../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { HashIt, User } from "../../Models/Pessoas/User";
 import { getCollection } from "../../MongoDB/MongoController";
 import { CommonRoutes } from "../../Routes/CommonRoutes/CommonRoutes";
-import { validateEmail } from "../LoginRestController";
+import { validateEmail, verifyJWT } from "../LoginRestController";
 import { Api } from "../RestController";
 
 export abstract class UserRoutes extends CommonRoutes {
@@ -147,11 +147,14 @@ export abstract class UserRoutes extends CommonRoutes {
     }
   }
 
-  public validateUser(user: User, required: TipoPessoa): boolean {
-    if (user.active && user.tipoPessoa && user.tipoPessoa === required) {
-      return true;
+  public async validateUser(req:Request, required: TipoPessoa[]): Promise<{result:boolean, username:string}> {
+    var jwtResult = verifyJWT(req);
+    console.log(jwtResult)
+    const user = await this.getUserByUsername(jwtResult.decoded.username);
+    if (jwtResult && jwtResult.result && user.active && user.tipoPessoa && required.includes(user.tipoPessoa)) {
+      return {result:true, username:user.username};
     } else {
-      return false;
+      return {result:false, username:user.username};
     }
   }
 

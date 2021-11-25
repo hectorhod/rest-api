@@ -11,6 +11,9 @@ import { controller } from "./Decorator/controller.decorator";
 import { Api } from "./RestController";
 import { LibraryRoutes } from "./Routes/LibraryRoutes";
 import * as fs from "fs";
+import Materia from "../Models/Materia/Materia";
+import { UserRestController } from "./UserRestController";
+import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 
 // Define a classe LibraryRestController, a qual controla os requests recebidos no /biblioteca
 @controller("/biblioteca")
@@ -109,11 +112,75 @@ export class LibraryRestController extends LibraryRoutes {
     }
   }
 
+  @routeConfig(METHOD.GET, "/getLivrosMateria/:idMateria")
+  public async getLivrosMateria(req: Request, res: Response){
+    try {
+      const materiaCollection = getCollection("Materias");
+      const livroCollection = getCollection("Livros");
+
+      const idMateria = new ObjectId(req.params.idMateria);
+
+
+      const materia = (await materiaCollection?.collection?.findOne({_id: idMateria})) as Materia;
+      const livrosMateria: ObjectId[] = materia.livros;
+      console.log(livrosMateria)
+      const livros = (await livroCollection?.collection?.find({_id: {$in: livrosMateria}}).toArray()) as Livro[]
+      
+      
+      livros
+        ? (res
+            .status(200)
+            .send(livros),
+          console.log(
+            livros
+          ))
+        : (res.status(500).send("Materia não foi encontrada"),
+          console.log("Materia não foi encontrada"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.PUT, "/putLivroMateria/:idMateria")
+  public async putLivroMateria(req: Request, res: Response){
+    try {
+      const userRoutes = this.server.routes.getRoute("userRoute") as UserRestController
+
+      let validation = await userRoutes.validateUser(req,[TipoPessoa.Diretor, TipoPessoa.Professor])
+      if ( !validation.result) {
+        throw new Error(`O usuário ${ validation.username} não possuí permissão para utilizar esse método!!`)
+      }
+      const turmaCollection = getCollection("Materias");
+
+      const idMateria = new ObjectId(req.params.idMateria);
+      const idLivro = new ObjectId(req.body.livroID)
+      
+      const materia = (await turmaCollection?.collection?.findOne({_id: idMateria})) as Materia;
+      let tmpLivros = materia.livros ?? [];
+      tmpLivros.push(idLivro);
+      materia.livros = tmpLivros;      
+
+      let result = turmaCollection?.collection?.updateOne({_id: idMateria}, { $set: materia})
+      
+      result
+        ? (res
+            .status(200)
+            .send("Materia atualizada com sucesso com o id: " + idMateria.toString()),
+          console.log(
+            "Materia atualizada com sucesso com o id: " + idMateria.toString()
+          ))
+        : (res.status(500).send("Materia não foi atualizada com sucesso"),
+          console.log("Materia não foi atualizada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
   // Define um método para o request POST no /biblioteca
   @routeConfig(METHOD.POST, "/", multer().single("pdf"))
   protected async postLivro(req: Request, res: Response) {
-    console.log(req.file);
-    console.log(req.body);
     try {
       // Cria um objeto Livro utilizando o json recebido no corpo do request
       const livro = req.body as Livro;
