@@ -92,19 +92,20 @@ export function validateEmail(email: string): boolean {
   return er.test(email);
 }
 
-export function verifyJWT(req: Request){
+export function verifyJWT(req: Request): {decoded: any , result: boolean}{
   const token: string = req.headers['x-acess-token'] as string;
   console.log(req.headers)
   if( !token ){
-    return false;
+    return {decoded: null, result: false};
   }else{
-    return verify(token, 'UmaSenhaMuiToSegura1234', function (err, decoded: any){
+    verify(token, 'UmaSenhaMuiToSegura1234', function (err, decoded: any){
       if (err){
-        return false;
+        return {decoded: null, result: false};
       }
 
-      console.log(decoded.id);
-      return true;
+      console.log(decoded);
+      return {decoded: decoded, result: true};
     })
   }
+  return {decoded: undefined, result: false}
 }

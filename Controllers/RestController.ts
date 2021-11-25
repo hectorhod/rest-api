@@ -106,7 +106,7 @@ export class Api {
       );
       res.setHeader(
         "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Origin,Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,Authorization"
+        "Access-Control-Allow-Origin,Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,Authorization, x-acess-token"
       );
       next();
     });

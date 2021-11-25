@@ -30,17 +30,18 @@ export class UserRestController extends UserRoutes {
 
     try {
       // console.log(req.session);
-      console.log(verifyJWT(req));
-      if (
+      const jwtResult = verifyJWT(req);
+      // console.log();
+      if ( jwtResult && jwtResult.result &&
         !this.validateUser(
-          await this.getUserByUsername(req.session.userid),
+          await this.getUserByUsername(jwtResult.decoded?.username),
           TipoPessoa.Diretor
           )
       ) {
         res
           .status(400)
           .send(
-            `<p><h2>Acesso Negado !!</h2></p>\n<p><h4>O usuário ${req.session.userid} não tem permissão o suficiente para acessar essa página</h4></p>`
+            `<p><h2>Acesso Negado !!</h2></p>\n<p><h4>O usuário ${jwtResult.decoded?.username} não tem permissão o suficiente para acessar essa página</h4></p>`
           );
         return;
       }
