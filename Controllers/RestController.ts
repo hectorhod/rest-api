@@ -87,7 +87,7 @@ export class Api {
         }),
         cookie: {
           maxAge: oneDay,
-          sameSite: true,
+          sameSite: "none",
           httpOnly: true,
           secure: false,
         },
