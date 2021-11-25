@@ -113,9 +113,11 @@ export class LibraryRestController extends LibraryRoutes {
   @routeConfig(METHOD.POST, "/", multer().single("pdf"))
   protected async postLivro(req: Request, res: Response) {
     console.log(req.file);
+    console.log(req.body);
     try {
       // Cria um objeto Livro utilizando o json recebido no corpo do request
       const livro = req.body as Livro;
+      console.log(livro)
       livro.linkSistema = "/" + livro.nome;
       const arquivo = req.file as PdfInfo;
 
