@@ -55,13 +55,13 @@ export class LoginRestController extends LoginRoutes {
           if (user && (await CompareIt(password, user))) {
             req.session.userid = user.username;
             console.log(req.session.userid)
-            const id = user._id;
+            const username = user.username;
             console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
-            const token = sign({ id }, 'UmaSenhaMuiToSegura1234', {
+            const token = sign({ username }, 'UmaSenhaMuiToSegura1234', {
               expiresIn: 60*5 //5min
             })
             res.send(
-              user.tipoPessoa
+              {tipoPessoa: user.tipoPessoa, token: token}
             );
 
             // res.json({auth: true, token: token})
@@ -94,6 +94,7 @@ export function validateEmail(email: string): boolean {
 
 export function verifyJWT(req: Request){
   const token: string = req.headers['x-acess-token'] as string;
+  console.log(req.headers)
   if( !token ){
     return false;
   }else{

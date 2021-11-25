@@ -10,6 +10,7 @@ import { METHOD } from "../Routes/utils/method.enum";
 import { AlunoRestController } from "./AlunoRestController";
 import { controller } from "./Decorator/controller.decorator";
 import { DiretorRestController } from "./DiretorRestController";
+import { verifyJWT } from "./LoginRestController";
 import { ProfessorRestController } from "./ProfessorRestController";
 import { Api } from "./RestController";
 import { UserRoutes } from "./Routes/UserRoutes";
@@ -28,11 +29,13 @@ export class UserRestController extends UserRoutes {
     // Configura o router para uma uri
 
     try {
+      // console.log(req.session);
+      console.log(verifyJWT(req));
       if (
         !this.validateUser(
           await this.getUserByUsername(req.session.userid),
           TipoPessoa.Diretor
-        )
+          )
       ) {
         res
           .status(400)
