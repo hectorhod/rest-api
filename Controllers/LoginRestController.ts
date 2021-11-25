@@ -54,6 +54,7 @@ export class LoginRestController extends LoginRoutes {
           }
           if (user && (await CompareIt(password, user))) {
             req.session.userid = user.username;
+            console.log(req.session.userid)
             const id = user._id;
             console.log(`usuário ${user.username} logou como tipo ${user.tipoPessoa}`);
             const token = sign({ id }, 'UmaSenhaMuiToSegura1234', {
