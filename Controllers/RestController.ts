@@ -31,7 +31,7 @@ export class Api {
   private _serverName: string;
   private _server: Server;
   private static dbName = process.env.BD_CONN_NAME;
-  private static mongo: MongoController = new MongoController();
+  public static mongo: MongoController = new MongoController();
   private static mongoClient = Api.mongo.getConnection();
   private readonly _app: Express;
   public readonly port: number;

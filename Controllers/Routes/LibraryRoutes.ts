@@ -17,14 +17,14 @@ export class LibraryRoutes extends CommonRoutes {
   // protected getById(req:Request, res:Response){throw new Error("O método não foi implementado!!!");
   // };
 
-  public static async getLivroById(id: string): Promise<Buffer> {
+  public async getLivroById(id: string): Promise<Buffer> {
     try {
       if (id) {
         const query = { _id: new ObjectId(id) };
         const result = (await getCollection("Livros")?.collection?.findOne(
           query
         )) as Livro;
-        return getArchive(result.linkSistema + ".pdf");
+        return await getArchive(result._id);
       } else {
         throw new Error("O id(livro) não foi recebido com sucesso.");
       }

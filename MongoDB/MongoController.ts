@@ -18,7 +18,9 @@ export class MongoController {
   private client: mongoDB.MongoClient = new mongoDB.MongoClient(this.uri);
 
   // Lê a informação do "banco.env" e obtém a uri para conexão
-  private db: mongoDB.Db = this.client.db(this.getDBName());
+  public db: mongoDB.Db = this.client.db(this.getDBName());
+
+  public bucket: mongoDB.GridFSBucket = new mongoDB.GridFSBucket(this.db);
 
   // É o construtor da classe
   constructor() {

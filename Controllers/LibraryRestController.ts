@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import multer from "multer";
 import { Livro } from "../Models/Livro/Livro";
 import { getCollection } from "../MongoDB/MongoController";
-import { PdfInfo, saveArchive } from "../pdfhandler/pdfhandler";
+import { PdfInfo, removeArchive, saveArchive } from "../pdfhandler/pdfhandler";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
 import { controller } from "./Decorator/controller.decorator";
@@ -89,7 +89,7 @@ export class LibraryRestController extends LibraryRoutes {
         const id = req.params.id;
 
         // Cria uma query de pesquisa com o id recebido
-        const result: Buffer = await LibraryRestController.getLivroById(id);
+        const result: Buffer = await this.getLivroById(id);
 
         // Exibe o resultado da operação anterior
         if (result) {
@@ -192,7 +192,7 @@ export class LibraryRestController extends LibraryRoutes {
       const result = await getCollection("Livros")?.collection?.insertOne(
         livro
       );
-      saveArchive(livro.linkSistema, arquivo);
+      saveArchive(livro.linkSistema, result?.insertedId, arquivo);
 
       // Exibe o resultado da operação anterior
       result
@@ -222,11 +222,7 @@ export class LibraryRestController extends LibraryRoutes {
         const id = req.params.id;
 
         // Cria um objeto Livro utilizando o json recebido no corpo do request
-        const biblioteca = req.body as Livro;
-
-        // Renomeia o arquivo undefined e define o linkSistema para o mesmo nome que o usuário criou para o livro
-        biblioteca.linkSistema = "/" + biblioteca.nome;
-        fs.renameSync('./Livros/undefined.pdf', './Livros/' + biblioteca.nome + '.pdf');
+        const livro = req.body as Livro;
         
         // Cria uma query de pesquisa com o id recebido
         const query = { _id: new ObjectId(id) };
@@ -234,7 +230,7 @@ export class LibraryRestController extends LibraryRoutes {
         // Obtem a COLLECTION necessária da lista de collection e tenta atualizar o objeto
         const result = await getCollection("Livros")?.collection?.updateOne(
           query,
-          { $set: biblioteca }
+          { $set: livro }
         );
 
         // Exibe o resultado da operação anterior
@@ -272,6 +268,8 @@ export class LibraryRestController extends LibraryRoutes {
         const result = await getCollection("Livros")?.collection?.deleteOne(
           query
         );
+
+        removeArchive(query._id);
 
         // Exibe o resultado da operação anterior
         result
