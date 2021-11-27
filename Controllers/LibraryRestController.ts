@@ -198,7 +198,7 @@ export class LibraryRestController extends LibraryRoutes {
       result
         ? (res
             .status(200)
-            .send("Livro criado com sucesso com o id: " + result.insertedId),
+            .send({response: "Livro criado com sucesso com o id: " + result.insertedId, idLivro: result.insertedId}),
           console.log(
             "Livro criado com sucesso com o id: " + result.insertedId
           ))
