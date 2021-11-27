@@ -51,13 +51,23 @@ export class AlunoRestController extends AlunoRoutes {
   }
 
   @routeConfig(METHOD.GET, "/getMaterias")
-  public async postMateria(req: Request, res: Response) {
+  public async getMaterias(req: Request, res: Response) {
     try {
       const collection = getCollection("Turmas");
       const materiaCollection = getCollection("Materias");
 
       const userRoutes = this.server.routes.getRoute('userRest') as UserRestController;
-      const user = await userRoutes.getUserByUsername(req.session.userid)
+
+      let validation = await userRoutes.validateUser(req, [TipoPessoa.Aluno] )
+      if (!validation.result) {
+        res
+          .status(400)
+          .send(
+            `<p><h2>Acesso Negado !!</h2></p>\n<p><h4>O usuário ${validation?.username} não tem permissão o suficiente para acessar essa página</h4></p>`
+          );
+        return;
+      }
+      const user = await userRoutes.getUserByUsername(validation.username)
       
       let turma: Turma | undefined;
 
