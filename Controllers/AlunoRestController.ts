@@ -59,6 +59,7 @@ export class AlunoRestController extends AlunoRoutes {
       const userRoutes = this.server.routes.getRoute('userRest') as UserRestController;
 
       let validation = await userRoutes.validateUser(req, [TipoPessoa.Aluno] )
+      console.log(validation)
       if (!validation.result) {
         res
           .status(400)

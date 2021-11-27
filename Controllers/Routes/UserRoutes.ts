@@ -140,7 +140,8 @@ export abstract class UserRoutes extends CommonRoutes {
         user.active = true;
         return true;
       } else {
-        throw new Error("O usuário já estava ativado!!");
+        user.active = false;
+        return false;
       }
     } catch (error: any) {
       throw new Error(`Ocorreu um erro ao tentar ativar o usuário: ${error}`);
