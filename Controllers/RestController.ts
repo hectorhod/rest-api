@@ -139,11 +139,11 @@ export function getServer(serverName: string) {
 }
 
 export const controllers = [
+  UserRestController,
   LibraryRestController,
   AlunoRestController,
   DiretorRestController,
   ProfessorRestController,
   LoginRestController,
-  UserRestController,
 ];
 // export { app };

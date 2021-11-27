@@ -2,7 +2,7 @@ import { Handler } from "express-serve-static-core";
 import { MetadataKeys } from "../Controllers/Decorator/controller.decorator";
 import { Api } from "../Controllers/RestController";
 import { CommonRoutes } from "./CommonRoutes/CommonRoutes";
-import { IRouter } from "./decorators/routes.decorator";
+import { authenticate, Authentification, IRouter } from "./decorators/routes.decorator";
 import { METHOD } from "./utils/method.enum";
 export class Routes {
   private _server: Api;
@@ -33,7 +33,27 @@ export class Routes {
           MetadataKeys.ROUTERS,
           controllerClass
         );
+
+        const authorizations: Authentification[] = Reflect.getMetadata(
+          MetadataKeys.AUTHORIZATION,
+          controllerClass
+        )
+
         const exRouter = controllerInstance.router;
+
+        if(authorizations){
+          let authRoute: CommonRoutes;
+          if(controllerInstance.getName() === 'userRest'){
+            authRoute = controllerInstance;
+          }else{
+            authRoute = this.getRoute('userRest')
+          }
+          authorizations.forEach( function({handlerName, tipoPessoas, descriptor}){
+            authenticate(authRoute,descriptor, tipoPessoas);
+            console.log(controllerMethods[String(handlerName)].bind(controllerMethods))
+            
+          })
+        }
 
         if (routers) {
           routers.forEach(({ method, path:routePath, handlerName, middleware, rootPath }) => {
@@ -71,6 +91,7 @@ export class Routes {
         if (path) {
           this._server.app.use(path, exRouter);
         }
+        
         this._routes.push(controllerInstance);
       });
       console.table(info);
@@ -78,9 +99,11 @@ export class Routes {
   }
 
   public getRoute(routeName: string) {
-    var route = this._routes.find((route) => {
-      return route.getName() === routeName;
-    });
+    if(this._routes){
+      var route = this._routes.find((route) => {
+        return route.getName() === routeName;
+      });
+    }
 
     if (route) {
       return route;
@@ -89,5 +112,7 @@ export class Routes {
     }
   }
 }
+
+
 
 // export {routes};
