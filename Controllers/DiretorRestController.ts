@@ -230,7 +230,7 @@ export class DiretorRestController extends DiretorRoutes {
       result
         ? (res
             .status(200)
-            .send("Materia criada com sucesso com o id: " + result.insertedId),
+            .send({response: "Materia criada com sucesso com o id: " + result.insertedId, idMateria: result.insertedId}),
           console.log(
             "Materia criada com sucesso com o id: " + result.insertedId
           ))
