@@ -152,6 +152,7 @@ export abstract class UserRoutes extends CommonRoutes {
     var jwtResult = verifyJWT(req);
     console.log(jwtResult)
     const user = await this.getUserByUsername(jwtResult.decoded.username);
+    console.log(user)
     if (jwtResult && jwtResult.result && user.active && user.tipoPessoa && required.includes(user.tipoPessoa)) {
       return {result:true, username:user.username};
     } else {

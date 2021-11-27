@@ -86,19 +86,23 @@ export class AlunoRestController extends AlunoRoutes {
       })
 
       const materiasAluno = turma?.materias;
-      const result: Materia[] = (await materiaCollection?.collection?.find({_id: { $in: materiasAluno}}).toArray()) as Materia[]
-      // materiasAluno?.forEach(function(materia){
-      //   result.push()
-      // })
-      result
+      if(materiasAluno){
+        const result: Materia[] = (await materiaCollection?.collection?.find({_id: { $in: materiasAluno}}).toArray()) as Materia[]
+        result
         ? (res
             .status(200)
             .send(result),
           console.log(
             result
           ))
-        : (res.status(500).send("Materia não foi criada com sucesso"),
-          console.log("Materia não foi criada com sucesso"));
+        : (res.status(500).send("Materia não foi adquirida com sucesso"),
+          console.log("Materia não foi adquirida com sucesso"));
+
+      }
+      // materiasAluno?.forEach(function(materia){
+      //   result.push()
+      // })
+     
     } catch (error: any) {
       console.log(error);
       res.status(400).send(error.message);
