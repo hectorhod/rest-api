@@ -5,7 +5,7 @@ import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";
 import { getCollection } from "../MongoDB/MongoController";
 import { CommonRoutes } from "../Routes/CommonRoutes/CommonRoutes";
-import { routeConfig } from "../Routes/decorators/routes.decorator";
+import { compareAuthentification, routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
 import { AlunoRestController } from "./AlunoRestController";
 import { controller } from "./Decorator/controller.decorator";
@@ -24,10 +24,10 @@ export class UserRestController extends UserRoutes {
   }
 
   // Define um método para o request GET no /professor
+  // @compareAuthentification([TipoPessoa.Diretor])
   @routeConfig(METHOD.GET, "/")
   public async get(req: Request, res: Response) {
     // Configura o router para uma uri
-
     try {
       let validation = await this.validateUser(req, [TipoPessoa.Diretor] )
       if (!validation.result) {
