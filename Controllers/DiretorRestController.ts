@@ -162,11 +162,13 @@ export class DiretorRestController extends DiretorRoutes {
     try {
       const turmaCollection = getCollection("Turmas");
 
-      const idTurma = req.params.idTurma as string;
+      const idTurma = new ObjectId(req.params.idTurma) ;
       const idMateria = new ObjectId(req.body.alunoID)
 
 
       const turma = (await turmaCollection?.collection?.findOne({_id: idTurma})) as Turma;
+      if(!turma){ throw new Error( `Não foi encontrada a turma ${idTurma}` );
+      }
       let tmpTurma: ObjectId[] = turma.materias ?? [];
       tmpTurma.push(idMateria);
       turma.materias = tmpTurma;
