@@ -145,7 +145,7 @@ export class LibraryRestController extends LibraryRoutes {
   @routeConfig(METHOD.PUT, "/putLivroMateria/:idMateria")
   public async putLivroMateria(req: Request, res: Response){
     try {
-      const userRoutes = this.server.routes.getRoute("userRoute") as UserRestController
+      const userRoutes = this.server.routes.getRoute("userRest") as UserRestController
 
       let validation = await userRoutes.validateUser(req,[TipoPessoa.Diretor, TipoPessoa.Professor])
       if ( !validation.result) {
