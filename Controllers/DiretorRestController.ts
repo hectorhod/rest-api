@@ -225,7 +225,7 @@ export class DiretorRestController extends DiretorRoutes {
   @routeConfig(METHOD.PUT, "/putProfessorMateria/:idMateria")
   public async putProfessorMateria(req: Request, res: Response) {
     try {
-      const materiaCollection = getCollection("Materia");
+      const materiaCollection = getCollection("Materias");
 
       const idMateria = new ObjectId(req.params.idMateria);
       const idProfessor = new ObjectId(req.body.professorID);
