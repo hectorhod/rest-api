@@ -118,6 +118,7 @@ export class LibraryRestController extends LibraryRoutes {
       const materiaCollection = getCollection("Materias");
       const livroCollection = getCollection("Livros");
 
+      console.log(req.params.idMateria)
       const idMateria = new ObjectId(req.params.idMateria);
 
 

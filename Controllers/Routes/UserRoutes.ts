@@ -138,9 +138,13 @@ export abstract class UserRoutes extends CommonRoutes {
       );
       if (!user.active) {
         user.active = true;
+        const result = await getCollection("Users")?.collection?.updateOne({_id: new ObjectId(id)}, { $set: user });
+
         return true;
       } else {
         user.active = false;
+        const result = await getCollection("Users")?.collection?.updateOne({_id: new ObjectId(id)}, { $set: user });
+
         return false;
       }
     } catch (error: any) {
