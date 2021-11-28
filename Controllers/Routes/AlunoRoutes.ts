@@ -33,12 +33,16 @@ export class AlunoRoutes extends CommonRoutes {
         );
 
         const turmas = await (turmaCollection.collection.find({alunos: id})).toArray() as Turma[]
-        turmas.forEach(async (turma) =>{
-          let index = turma.alunos.indexOf(id,0);
-          if(index > -1){
-            turma.alunos.splice(index,1)
-          }
-          await turmaCollection.collection.updateOne({_id: turma._id}, {$set: turma})
+        turmas.forEach((turma) =>{
+
+          turma.alunos.forEach( async(turmaR,index) =>{
+            let tmpTurma = turma;
+            if(turmaR.toString() === id.toString()){
+              tmpTurma.alunos.splice(index,1)
+              await turmaCollection.collection.updateOne({_id: tmpTurma._id}, {$set: tmpTurma})
+            }
+          })
+          
         })
 
         // Exibe o resultado da operação anterior
