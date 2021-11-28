@@ -87,6 +87,7 @@ export class AlunoRestController extends AlunoRoutes {
 
       const materiasAluno = turma?.materias;
       if(materiasAluno){
+        console.log(materiasAluno)
         const result: Materia[] = (await materiaCollection?.collection?.find({_id: { $in: materiasAluno}}).toArray()) as Materia[]
         result
         ? (res

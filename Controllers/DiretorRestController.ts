@@ -163,7 +163,7 @@ export class DiretorRestController extends DiretorRoutes {
       const turmaCollection = getCollection("Turmas");
 
       const idTurma = new ObjectId(req.params.idTurma) ;
-      const idMateria = new ObjectId(req.body.alunoID)
+      const idMateria = new ObjectId(req.body.materiaID)
 
 
       const turma = (await turmaCollection?.collection?.findOne({_id: idTurma})) as Turma;
@@ -331,6 +331,46 @@ export class DiretorRestController extends DiretorRoutes {
       console.log(error);
 
       // Devolve uma mensagem para o remetente com o erro e um código de status
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.DELETE, "/deleteMateria/:idMateria")
+  public async deleteMateria(req: Request, res: Response) {
+    try {
+      const idMateria = new ObjectId(req.params.idMateria)
+      const result = await getCollection("Materias")?.collection?.deleteOne({_id: idMateria});
+      result
+        ? (res
+            .status(200)
+            .send({response: "Materia removida com sucesso com o id: " + idMateria, idMateria: idMateria}),
+          console.log(
+            "Materia removida com sucesso com o id: " + idMateria
+          ))
+        : (res.status(500).send("Materia não foi removida com sucesso"),
+          console.log("Materia não foi removida com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
+  @routeConfig(METHOD.DELETE, "/deleteTurma/:idTurma")
+  public async deleteTurma(req: Request, res: Response) {
+    try {
+      const idTurma = new ObjectId(req.params.idTurma)
+      const result = await getCollection("Turmas")?.collection?.deleteOne({_id: idTurma});
+      result
+        ? (res
+            .status(200)
+            .send({response: "Turma removida com sucesso com o id: " + idTurma, idTurma: idTurma}),
+          console.log(
+            "Turma removida com sucesso com o id: " + idTurma
+          ))
+        : (res.status(500).send("Turma não foi removida com sucesso"),
+          console.log("Turma não foi removida com sucesso"));
+    } catch (error: any) {
+      console.log(error);
       res.status(400).send(error.message);
     }
   }
