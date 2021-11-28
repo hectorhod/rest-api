@@ -2,9 +2,11 @@
 import { ObjectID, ObjectId } from "bson";
 import { Request, Response } from "express";
 import { Atividade } from "../Models/Atividade/Atividade";
+import Materia from "../Models/Materia/Materia";
 import { Professor } from "../Models/Pessoas/Professor";
 import { TipoPessoa } from "../Models/Pessoas/TipoPessoa/TipoPessoa";
 import { User } from "../Models/Pessoas/User";
+import { Turma } from "../Models/Turma/Turma";
 import { getCollection } from "../MongoDB/MongoController";
 import { routeConfig } from "../Routes/decorators/routes.decorator";
 import { METHOD } from "../Routes/utils/method.enum";
@@ -49,6 +51,48 @@ export class ProfessorRestController extends ProfessorRoutes {
     }
   }
 
+  @routeConfig(METHOD.GET, "/getMaterias")
+  public async getMaterias(req: Request, res: Response) {
+    try {
+      const collection = getCollection("Turmas");
+      const materiaCollection = getCollection("Materias");
+
+      const userRoutes = this.server.routes.getRoute(
+        "userRest"
+      ) as UserRestController;
+
+      let validation = await userRoutes.validateUser(req, [
+        TipoPessoa.Professor,
+      ]);
+      console.log(validation);
+      if (!validation.result) {
+        res
+          .status(400)
+          .send(
+            `<p><h2>Acesso Negado !!</h2></p>\n<p><h4>O usuário ${validation?.username} não tem permissão o suficiente para acessar essa página</h4></p>`
+          );
+        return;
+      }
+      const user = await userRoutes.getUserByUsername(validation.username);
+
+      const materiasProfessor = (await materiaCollection.collection
+        .find({ professor: user.pessoa })
+        .toArray()) as Materia[];
+
+      if (materiasProfessor) {
+        res.status(200).send(materiasProfessor);
+        console.log("Materias retornadas com sucesso");
+      } else {
+        res.status(500).send("Materia não foi adquirida com sucesso")
+        console.log("Materia não foi adquirida com sucesso");
+      }
+      
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
   // Define um método para o request POST no /professor
   @routeConfig(METHOD.POST, "/")
   protected async post(req: Request, res: Response) {
@@ -86,20 +130,21 @@ export class ProfessorRestController extends ProfessorRoutes {
     try {
       var route = this.server.routes.getRoute("userRest") as UserRestController;
       if (req.body && route) {
-        let professorCollection = getCollection("Professors")
+        let professorCollection = getCollection("Professors");
 
-        await route.validateEmail(req.body.email) ?? false;
-        await route.validateUsername(req.body.username) ?? false;
+        (await route.validateEmail(req.body.email)) ?? false;
+        (await route.validateUsername(req.body.username)) ?? false;
 
         var professor: Professor = new Professor(
           req.body.username,
           req.body.idade,
-          req.body.cpf,
+          req.body.cpf
         );
 
-        let resultProfessor = professorCollection?.collection?.insertOne(professor)
-        if(!resultProfessor){
-          throw new Error("Ocorreu um erro ao criar o professor")
+        let resultProfessor =
+          professorCollection?.collection?.insertOne(professor);
+        if (!resultProfessor) {
+          throw new Error("Ocorreu um erro ao criar o professor");
         }
 
         var result: User = await route.createUser(
@@ -131,18 +176,22 @@ export class ProfessorRestController extends ProfessorRoutes {
     }
   }
   @routeConfig(METHOD.POST, "/postAtividade")
-  protected async postAtividade(req: Request, res:Response) {
+  protected async postAtividade(req: Request, res: Response) {
     try {
-      const atividade = req.body as Atividade
+      const atividade = req.body as Atividade;
       atividade.materia = new ObjectID(req.body.materia);
-      const result = await getCollection("Atividades")?.collection?.insertOne(atividade);
+      const result = await getCollection("Atividades")?.collection?.insertOne(
+        atividade
+      );
       result
-          ? (res
-              .status(200)
-              .send("Atividade criada com sucesso com o id " + result.insertedId),
-            console.log("Atividade criada com sucesso com o id " + result.insertedId))
-          : (res.status(500).send("Atividade não foi criada com sucesso"),
-            console.log("Atividade não foi criada com sucesso"));
+        ? (res
+            .status(200)
+            .send("Atividade criada com sucesso com o id " + result.insertedId),
+          console.log(
+            "Atividade criada com sucesso com o id " + result.insertedId
+          ))
+        : (res.status(500).send("Atividade não foi criada com sucesso"),
+          console.log("Atividade não foi criada com sucesso"));
     } catch (error: any) {
       console.log(error);
       res.status(400).send(error.message);
@@ -188,5 +237,4 @@ export class ProfessorRestController extends ProfessorRoutes {
       res.status(400).send(error.message);
     }
   }
-
 }
