@@ -222,6 +222,34 @@ export class DiretorRestController extends DiretorRoutes {
     }
   }
 
+  @routeConfig(METHOD.PUT, "/putProfessorMateria/:idMateria")
+  public async putProfessorMateria(req: Request, res: Response) {
+    try {
+      const materiaCollection = getCollection("Materia");
+
+      const idMateria = new ObjectId(req.params.idMateria);
+      const idProfessor = new ObjectId(req.body.professorID);
+
+      const materia = (await materiaCollection?.collection?.findOne({_id: idMateria})) as Materia;
+      materia.professor = idProfessor
+
+      let result = materiaCollection?.collection?.updateOne({_id: idMateria}, { $set: materia})
+      
+      result
+        ? (res
+            .status(200)
+            .send("materia atualizada com sucesso com o id: " + idMateria.toString()),
+          console.log(
+            "materia atualizada com sucesso com o id: " + idMateria.toString()
+          ))
+        : (res.status(500).send("materia não foi atualizada com sucesso"),
+          console.log("materia não foi atualizada com sucesso"));
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  }
+
   @routeConfig(METHOD.POST, "/postMateria")
   public async postMateria(req: Request, res: Response) {
     try {
