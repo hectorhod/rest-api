@@ -5,6 +5,7 @@ import { Aluno } from "../Pessoas/Aluno";
 
 export class Turma {
   _id: ObjectId;
+  nomeTurma: string;
   @objectIDArray()
   materias: ObjectId[] = [];
   @objectIDArray()
@@ -13,11 +14,13 @@ export class Turma {
   dataInicio: Date;
 
   constructor(
+    nomeTurma: string,
     periodo: number,
     dataInicio: Date,
     idDiretor: ObjectId,
     id?: ObjectId
   ) {
+    this.nomeTurma = nomeTurma;
     id ? (this._id = id) : (this._id = new ObjectId());
     this.periodo = periodo;
     this.dataInicio = dataInicio;

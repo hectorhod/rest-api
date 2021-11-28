@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 import { Aluno } from "../../Models/Pessoas/Aluno";
 import { TipoPessoa } from "../../Models/Pessoas/TipoPessoa/TipoPessoa";
+import { Turma } from "../../Models/Turma/Turma";
 import { getCollection } from "../../MongoDB/MongoController";
 import { CommonRoutes } from "../../Routes/CommonRoutes/CommonRoutes";
 import { Api } from "../RestController";
@@ -24,11 +25,21 @@ export class AlunoRoutes extends CommonRoutes {
 
         // Cria uma query de pesquisa com o id recebido
         const query = { _id: id };
+        const turmaCollection = getCollection("Turmas")
 
         // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
         const result = await getCollection("Alunos")?.collection?.deleteOne(
           query
         );
+
+        const turmas = await (turmaCollection.collection.find({alunos: id})).toArray() as Turma[]
+        turmas.forEach(async (turma) =>{
+          let index = turma.alunos.indexOf(id,0);
+          if(index > -1){
+            turma.alunos.splice(index,1)
+          }
+          await turmaCollection.collection.updateOne({_id: turma._id}, {$set: turma})
+        })
 
         // Exibe o resultado da operação anterior
         result

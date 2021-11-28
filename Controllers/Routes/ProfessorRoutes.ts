@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
+import Materia from "../../Models/Materia/Materia";
 import { getCollection } from "../../MongoDB/MongoController";
 import { CommonRoutes } from "../../Routes/CommonRoutes/CommonRoutes";
 import { Api } from "../RestController";
@@ -19,11 +20,18 @@ export class ProfessorRoutes extends CommonRoutes {
 
         // Cria uma query de pesquisa com o id recebido
         const query = { _id: id };
+        const materiaCollection = getCollection("Materias")
 
         // Obtem a COLLECTION necessária da lista de collection e tenta remover o objeto
         const result = await getCollection("Professors")?.collection?.deleteOne(
           query
         );
+
+        const materias = await (materiaCollection.collection.find({professor: id})).toArray() as Materia[]
+        materias.forEach(async (materia) =>{
+          materia.professor = null;
+          await materiaCollection.collection.updateOne({_id: materia._id}, {$set: materia})
+        })
 
         // Exibe o resultado da operação anterior
         result
