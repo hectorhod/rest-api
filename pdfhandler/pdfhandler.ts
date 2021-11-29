@@ -11,7 +11,6 @@ export async function getArchive(idLivro: ObjectId): Promise<any> {
     var cursor = await Api.mongo.bucket
       .find({ metadata: { field: "idLivro", value: idLivro } })
       .toArray();
-    // console.log(cursor)
     
     if(cursor && cursor.length == 1){
       var result;
@@ -27,7 +26,6 @@ export async function getArchive(idLivro: ObjectId): Promise<any> {
       })
 
       result = await end;
-      console.log(result)
       return result;
     }
 
@@ -72,7 +70,6 @@ export function saveArchive(
     if (idLivro) {
       var bufferStream = new Stream.PassThrough();
       bufferStream.end(info.buffer);
-      console.log(info.buffer);
       bufferStream.pipe(
         Api.mongo.bucket.openUploadStream(filepath, {
           chunkSizeBytes: 1048576,

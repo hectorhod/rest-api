@@ -64,7 +64,6 @@ export class ProfessorRestController extends ProfessorRoutes {
       let validation = await userRoutes.validateUser(req, [
         TipoPessoa.Professor,
       ]);
-      console.log(validation);
       if (!validation.result) {
         res
           .status(400)

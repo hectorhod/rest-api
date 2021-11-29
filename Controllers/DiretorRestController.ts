@@ -197,7 +197,6 @@ export class DiretorRestController extends DiretorRoutes {
 
       const idTurma = new ObjectId(req.params.idTurma);
       const idAluno = new ObjectId(req.body.alunoID)
-      // console.log(idAluno.toString())
 
       const turma = (await turmaCollection?.collection?.findOne({_id: idTurma})) as Turma;
       let tmpAlunos: ObjectId[] = turma.alunos ?? [];

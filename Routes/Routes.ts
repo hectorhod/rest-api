@@ -41,19 +41,19 @@ export class Routes {
 
         const exRouter = controllerInstance.router;
 
-        if(authorizations){
-          let authRoute: CommonRoutes;
-          if(controllerInstance.getName() === 'userRest'){
-            authRoute = controllerInstance;
-          }else{
-            authRoute = this.getRoute('userRest')
-          }
-          authorizations.forEach( function({handlerName, tipoPessoas, descriptor}){
-            authenticate(authRoute,descriptor, tipoPessoas);
-            console.log(controllerMethods[String(handlerName)].bind(controllerMethods))
+        // if(authorizations){
+        //   let authRoute: CommonRoutes;
+        //   if(controllerInstance.getName() === 'userRest'){
+        //     authRoute = controllerInstance;
+        //   }else{
+        //     authRoute = this.getRoute('userRest')
+        //   }
+        //   authorizations.forEach( function({handlerName, tipoPessoas, descriptor}){
+        //     authenticate(authRoute,descriptor, tipoPessoas);
+        //     console.log(controllerMethods[String(handlerName)].bind(controllerMethods))
             
-          })
-        }
+        //   })
+        // }
 
         if (routers) {
           routers.forEach(({ method, path:routePath, handlerName, middleware, rootPath }) => {

@@ -64,7 +64,6 @@ export function compareAuthentification(
 
     const original = descriptor.value;
     descriptor.value = async function (...args: any[]) {
-      // console.log(typeof parameters)
       const getRoute = promisify(getServer('apprender').routes.getRoute)
       console.log(getRoute.toString())
       // const validateUser = promisify((await getRoute('userRest') as UserRestController).validateUser);
@@ -80,7 +79,6 @@ export function compareAuthentification(
       //   return;
       // }
       if (req) {
-        // console.log(validation);
       }
 
       const result = original.apply(this, args);

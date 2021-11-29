@@ -59,7 +59,6 @@ export class AlunoRestController extends AlunoRoutes {
       const userRoutes = this.server.routes.getRoute('userRest') as UserRestController;
 
       let validation = await userRoutes.validateUser(req, [TipoPessoa.Aluno] )
-      console.log(validation)
       if (!validation.result) {
         res
           .status(400)
@@ -87,14 +86,13 @@ export class AlunoRestController extends AlunoRoutes {
 
       const materiasAluno = turma?.materias;
       if(materiasAluno){
-        console.log(materiasAluno)
         const result: Materia[] = (await materiaCollection?.collection?.find({_id: { $in: materiasAluno}}).toArray()) as Materia[]
         result
         ? (res
             .status(200)
             .send(result),
           console.log(
-            result
+            "Materias retornadas com sucesso"
           ))
         : (res.status(500).send("Materia não foi adquirida com sucesso"),
           console.log("Materia não foi adquirida com sucesso"));
@@ -116,13 +114,11 @@ export class AlunoRestController extends AlunoRoutes {
     try {
       // Cria um objeto Aluno utilizando o json recebido no corpo do request
       const aluno = req.body as Aluno;
-      console.log(req.body);
 
       // Obtem a COLLECTION necessária da lista de collection e tenta inserir o objeto
       const result = await getCollection("Alunos")?.collection?.insertOne(
         aluno
       );
-      console.log(result);
 
       // Exibe o resultado da operação anterior
       result

@@ -154,12 +154,12 @@ export abstract class UserRoutes extends CommonRoutes {
 
   public async validateUser(req:Request, required: TipoPessoa[]): Promise<{result:boolean, username:string}> {
     var jwtResult = verifyJWT(req);
-    console.log(jwtResult)
     const user = await this.getUserByUsername(jwtResult.decoded.username);
-    console.log(user)
     if (jwtResult && jwtResult.result && user.active && user.tipoPessoa && required.includes(user.tipoPessoa)) {
+      console.log(`O token do ${user.username} foi verificado com sucesso`)
       return {result:true, username:user.username};
     } else {
+      console.log(`O token do ${user.username} não foi verificado com sucesso`)
       return {result:false, username:user.username};
     }
   }

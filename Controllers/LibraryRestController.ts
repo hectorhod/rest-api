@@ -118,13 +118,11 @@ export class LibraryRestController extends LibraryRoutes {
       const materiaCollection = getCollection("Materias");
       const livroCollection = getCollection("Livros");
 
-      console.log(req.params.idMateria)
       const idMateria = new ObjectId(req.params.idMateria);
 
 
       const materia = (await materiaCollection?.collection?.findOne({_id: idMateria})) as Materia;
       const livrosMateria: ObjectId[] = materia.livros;
-      console.log(livrosMateria)
       const livros = (await livroCollection?.collection?.find({_id: {$in: livrosMateria}}).toArray()) ?? [] as Livro[]
       
       
@@ -185,7 +183,6 @@ export class LibraryRestController extends LibraryRoutes {
     try {
       // Cria um objeto Livro utilizando o json recebido no corpo do request
       const livro = req.body as Livro;
-      console.log(livro)
       livro.linkSistema = "/" + livro.nome;
       const arquivo = req.file as PdfInfo;
 
