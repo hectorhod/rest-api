@@ -125,7 +125,7 @@ export class LibraryRestController extends LibraryRoutes {
       const materia = (await materiaCollection?.collection?.findOne({_id: idMateria})) as Materia;
       const livrosMateria: ObjectId[] = materia.livros;
       console.log(livrosMateria)
-      const livros = (await livroCollection?.collection?.find({_id: {$in: livrosMateria}}).toArray()) as Livro[]
+      const livros = (await livroCollection?.collection?.find({_id: {$in: livrosMateria}}).toArray()) ?? [] as Livro[]
       
       
       livros
