@@ -59,9 +59,11 @@ export class LoginRestController extends LoginRoutes {
             const token = sign({ username }, 'UmaSenhaMuiToSegura1234', {
               expiresIn: 60*60 //1hora
             })
+            console.log(`usuário: ${username} recebeu o token: ${token}`)
             res.send(
               {tipoPessoa: user.tipoPessoa, token: token}
             );
+            console.log(`token enviado para front: ${{tipoPessoa: user.tipoPessoa, token: token}}`)
 
             // res.json({auth: true, token: token})
 
